@@ -1,7 +1,13 @@
 <?php
 include_once '../configuracion.php';
 
-$obj = new Usuario();
-$array = ['nombre' => 'Mateo', 'pass' => '98765' , 'email' => 'MiGmail@gmail.com'];
-// print_r($array);
-$obj -> mostrar('marcelo',1200,'usnombre');
+$objCompra = new Compra;
+$objU = new Usuario;
+
+
+
+// $objU ->setear('nacho',123,'TpFinal@gmail.com');
+// $objU ->insert();
+
+$objCompra->setear(1,01/04/2003);
+echo $objCompra->insertar();
