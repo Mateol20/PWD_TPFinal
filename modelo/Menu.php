@@ -72,7 +72,14 @@ class Menu
     }
 
     // --- Métodos de Persistencia
-
+    public function setear($idMenu, $meNombre, $meDescripcion, $idPadre, $meDeshabilitado)
+    {
+        $this->setIdMenu($idMenu);
+        $this->setMeNombre($meNombre);
+        $this->setMeDescripcion($meDescripcion);
+        $this->setIdPadre($idPadre);
+        $this->setMeDeshabilitado($meDeshabilitado);
+    }
     public function insertar()
     {
         $respuesta = false;
