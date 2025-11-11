@@ -25,7 +25,7 @@ class Compra{
         $this->idCompra = $dato;
     }
     public function setcoFecha($dato){
-        $this->coFecha = $dato;
+        $this->coFecha = 'CURRENT_TIMESTAMP';
     }
     public function setIdUsuario($dato){
         $this->idUsuario = $dato;
@@ -35,10 +35,9 @@ class Compra{
         $this->setcoFecha($coFecha);
     }
 
-
     public function insertar(){
         $db = new BaseDatos;
-        $sql = "INSERT INTO compra (cofecha,idusuario) VALUES('" . $this->getCoFecha() . "','" . $this->getIdUsuario() . "')";
+        $sql = "INSERT INTO compra (cofecha,idusuario) VALUES(CURRENT_TIMESTAMP,'" . $this->getIdUsuario() . "')";
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){
@@ -55,7 +54,10 @@ class Compra{
 
     public function modificar(){
         $db = new BaseDatos;
-        $sql = "UPDATE compra SET cofecha = '" . $this->getCoFecha() . "', idusuario = '" . $this->getIdUsuario() . "'"; 
+            $sql = "UPDATE compra 
+            SET cofecha = CURRENT_TIMESTAMP, 
+                idusuario = " . $this->getIdUsuario() . " 
+            WHERE idcompra = " . $this->getIdCompra();
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){
@@ -70,7 +72,7 @@ class Compra{
     } 
     public function eliminar(){
         $db = new BaseDatos;
-        $sql = "DELETE compra WHERE idcompra='". $this->getIdCompra() . "'";
+        $sql = "DELETE FROM compra WHERE idcompra = '" . $this->getIdCompra() . "'";
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){
@@ -83,13 +85,13 @@ class Compra{
         }
         return $respuesta;
     } 
-    public function seleccionar($id, $datoABuscar){
+    public function seleccionar(){
         $db = new BaseDatos;
-        $sql = "SELECT '" . $datoABuscar . "'FROM compra WHERE idcompra=". $id ."'";
+        $sql = "SELECT * FROM compra WHERE idcompra=". $this->getIdCompra();
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){
-                $respuesta = true;
+                $respuesta = $db->Registro();
                 $this->setIdCompra($respuesta['idcompra']);
                 $this->setcoFecha($respuesta['cofecha']);
                 $this->setIdUsuario($respuesta['idusuario']);
