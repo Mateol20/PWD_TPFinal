@@ -65,8 +65,7 @@ class CompraEstado{
         $this->fechaFin = $fechaFin;
         return $this;
     }
-    public function setear($idCompraEstado,$idCompra,$idCompraEstadoTipo,$fechaI,$fechaF){
-        $this->setIdCompraEstado($idCompraEstado);
+    public function setear($idCompra,$idCompraEstadoTipo,$fechaI,$fechaF){
         $this->setIdCompra($idCompra);
         $this->setIdCompraEstadoTipo($idCompraEstadoTipo);
         $this->setFechaIni($fechaI);
@@ -121,7 +120,61 @@ class CompraEstado{
         return $salida;
     }
 
+    public function obtenerPorId(){
+        $db = new BaseDatos;
+        $sql = "SELECT * FROM compraestado WHERE idcompraestado =" . $this->getIdCompraEstado();
+        if($db->Iniciar()){
+            if($db->Ejecutar($sql)){
+                $linea = $db->Registro();
+                $obj = new CompraEstado;
+                $obj->setear(
+                $linea['idcompra'],
+                $linea['idcompraestado'],
+                $linea['fechaini'],
+                $linea['fechafin']);
+                $salida = $obj;
+            }else{
+                $db->getError();
+            }
+        }else{
+                $db->getError();
+            }
+        return $salida;
+    }
+
+     /**
+     * Obtiene una colección (array) de objetos Menu que cumplen una condición 
+     * o todos los registros si no se especifica condición.
+     * * @param string
+     * @return array 
+     */
+    public function listar ($where = ""){
+        $db = new BaseDatos;
+        $sql = "SELECT * FROM compraestado";
+        if ($where != "") {
+            $sql .= "WHERE ". $where;
+        }
+        if($db->Iniciar()){
+            if($db->Ejecutar($sql)){
+                $arreglo = [];
+                $obj = new CompraEstado;
+                foreach($db->Registro() as $row){
+                    $obj->setear(
+                    $row['idcompra'],
+                    $row['idcompraestado'],
+                    $row['fechaini'],
+                    $row['fechafin']);
+                    array_push($arreglo,$obj);
+                }
+            $salida = $arreglo;
+            }else{
+                $db->getError();
+            }
+        }else{
+                $db->getError();
+            }
+        return $salida;
+    }
+
 
 }
-
-?>
