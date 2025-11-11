@@ -41,9 +41,8 @@ class Producto{
         $this->mensajeError = $mensajeError;
     }
         // --- Métodos de Persistencia
-    public function setear($idProducto,$proNombre,$proDetalle,$proCantStock)
+    public function setear($proNombre,$proDetalle,$proCantStock)
     {
-        $this->setIdProducto($idProducto);
         $this->setProNombre($proNombre);
         $this->setProDetalle($proDetalle);
         $this->setProCantStock($proCantStock);
@@ -101,12 +100,62 @@ class Producto{
                 $respuesta = true;
             } else {
                 $this->setMensajeError("menu->modificar: " . $bd->getError());
-            }
+            }       
         } else {
             $this->setMensajeError("menu->modificar: " . $bd->getError());
         }
 
         return $respuesta;
     }
+    public function obtenerPorId()
+    {
+        $respuesta = false;
+        $bd = new BaseDatos();
+        $sql = "SELECT * FROM producto WHERE idproducto = '" . $this->getIdProducto() . "'";
+                if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($sql)) {
+                if ($registro = $bd->Registro()) {
+                    $this->setProNombre($registro['pronombre']);
+                    $this->setProDetalle($registro['prodetalle']);
+                    $this->setProCantStock($registro['procantstock']);
+                    $respuesta = true;
+                }
+            } else {
+                $this->setMensajeError("producto->obtenerPorId: " . $bd->getError());
+            }
+        } else {
+            $this->setMensajeError("producto->obtenerPorId: " . $bd->getError());
+        }
+        return $respuesta;
+    }
+     public static function listar($condicion = "")
+    {
+        $arregloProducto = [];
+        $bd = new BaseDatos();
+        $sql = "SELECT * FROM menu ";
 
+        if ($condicion != "") {
+            $sql .= "WHERE " . $condicion;
+        }
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($sql)) {
+
+                while ($registro = $bd->Registro()) {
+                    $producto = new Producto();
+                    $producto->setProNombre($registro['pronombre']);
+                    $producto->setProDetalle($registro['prodetalle']);
+                    $producto->setProCantStock($registro['procantstock']);
+                    $producto->setIdProducto($registro['idproducto']);
+                    array_push($arregloMenu, $producto);
+                }
+            } else {
+                echo "Error al listar: " . $bd->getError(); 
+            }
+        } else {
+            echo "Error de conexión: " . $bd->getError();
+        }
+
+        return $arregloMenu;
+    }
 }
