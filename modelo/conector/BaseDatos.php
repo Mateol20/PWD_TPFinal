@@ -240,4 +240,13 @@ class BaseDatos extends PDO
 
         return $this->resultado;
     }
+    /**
+     * Retorna el ID de la última fila insertada o el valor de la secuencia.
+     * Es un wrapper para el método nativo de PDO.
+     * @return string|false
+     */
+    public function getLastId()
+    {
+        // Llama al método lastInsertId() de la clase padre (PDO)
+    }
 }

@@ -1,48 +1,64 @@
 <?php
-class Rol {
+class Rol
+{
 
     private $idRol;
     private $roDescripcion;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->roDescripcion = '';
     }
 
-    public function getIdRol(){
+    public function getIdRol()
+    {
         return $this->idRol;
     }
 
-    public function getDescripcion(){
+    public function getDescripcion()
+    {
         return $this->roDescripcion;
     }
 
-    public function setIdRol($id){
+    public function setIdRol($id)
+    {
         $this->idRol = $id;
     }
 
-    public function setDescripcion($desc){
+    public function setDescripcion($desc)
+    {
         $this->roDescripcion = $desc;
     }
 
-    public function insert() {
+    public function insert()
+    {
         $db = new BaseDatos();
         $sql = "INSERT INTO rol (roDescripcion)
                 VALUES('" . $this->getDescripcion() . "')";
 
         if ($db->Iniciar()) {
-            if ($db->Ejecutar($sql)) {
+            // Ejecutar devuelve el ID generado (>0) o 0/false si falla.
+            $idGenerado = $db->Ejecutar($sql);
+
+            if ($idGenerado > 0) { // Si retorna un ID válido (entero positivo)
+                $this->setIdRol($idGenerado); // <-- ¡ASIGNAR EL ID AL OBJETO!
                 echo 'Rol agregado 👍';
+                $res = true;
             } else {
+                // Manejo de error
                 $error = $db->getError();
                 echo is_array($error) ? implode(' | ', $error) : $error;
             }
         } else {
+            // Manejo de error de conexión
             $error = $db->getError();
             echo is_array($error) ? implode(' | ', $error) : $error;
         }
+        return $res; // Devolver el resultado
     }
 
-    public function modificar($id) {
+    public function modificar($id)
+    {
         $this->setIdRol($id);
         $db = new BaseDatos();
         $sql = "UPDATE rol SET 
@@ -62,7 +78,8 @@ class Rol {
         }
     }
 
-    public function eliminar($id) {
+    public function eliminar($id)
+    {
         $this->setIdRol($id);
         $db = new BaseDatos();
         $sql = "DELETE FROM rol WHERE idRol = '" . $this->getIdRol() . "'";
@@ -80,4 +97,3 @@ class Rol {
         }
     }
 }
-?>

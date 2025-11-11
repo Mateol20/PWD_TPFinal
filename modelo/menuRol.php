@@ -45,8 +45,11 @@ class menuRol
     {
         $respuesta = false;
         $bd = new BaseDatos();
-        $sql = "INSERT INTO menursol (idmenu, idrol)
-                VALUES ('{$this->getObjMenu()->getIdMenu()}','{$this->getObjRol->getIdRol()}')";
+        $idMenu = $this->getObjMenu()->getIdMenu();
+        $idRol = $this->getObjRol()->getIdRol();
+        $sql = "INSERT INTO menurol (idmenu, idrol)
+                VALUES ('{$idMenu}','{$idRol}')";
+
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 $respuesta = true;
@@ -63,77 +66,77 @@ class menuRol
     {
         $respuesta = false;
         $bd = new BaseDatos();
-        $sql = "DELETE FROM menurol WHERE idmenu = '{$this->getObjMenu()->getIdMenu()}'";
+
+        // Una tabla de unión suele tener una clave compuesta (idmenu Y idrol)
+        // La eliminación por solo idmenu eliminaría TODOS los roles de ese menú.
+        // Se corrige para eliminar UNA ÚNICA relación.
+        $sql = "DELETE FROM menurol 
+                WHERE idmenu = '{$this->getObjMenu()->getIdMenu()}' 
+                AND idrol = '{$this->getObjRol()->getIdRol()}'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 $respuesta = true;
             } else {
-                $this->setMensajeError("menu->eliminar: " . $bd->getError());
+                $this->setMensajeError("menuRol->eliminar: " . $bd->getError());
             }
         } else {
-            $this->setMensajeError("menu->eliminar: " . $bd->getError());
+            $this->setMensajeError("menuRol->eliminar: " . $bd->getError());
         }
 
         return $respuesta;
     }
+
     public function modificar()
     {
-        $respuesta = false;
-        $bd = new BaseDatos();
-        $idMenuSQL = $this->getObjMenu() === null ? 'NULL' : $this->getObjMenu();
-        $idRolSQL = $this->getObjRol() === null ? 'NULL' : "'" . $this->getObjRol() . "'";
-        $sql = "UPDATE menurol SET 
-            idmenu = '" . $this->getObjMenu()->getIdMenu() . "', 
-            idrol = '" . $this->getObjRol()->getIdRol() . "', 
-        WHERE idmenu = '" . $this->getObjMenu()->getIdMenu() . "'";
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
-            } else {
-                $this->setMensajeError("menu->modificar: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("menu->modificar: " . $bd->getError());
-        }
-
-        return $respuesta;
+        // CORRECCIÓN 3: Se remueve la lógica de NULL innecesaria.
+        // El método se deja vacío o se elimina, ya que Modificar una tabla de unión es atípico.
+        $this->setMensajeError("menuRol->modificar: No se admite la modificación directa en la tabla de unión.");
+        return false;
     }
-        /**
-     * Busca un registro de menú en la base de datos por su ID y carga 
-     * sus datos en las propiedades del objeto actual.
-     * @return boolean 
-     */
-    public function obtenerPorId()
+
+    public function obtenerPorId() // Se asume que el ID es la CLAVE COMPUESTA
     {
         $respuesta = false;
         $bd = new BaseDatos();
-        $sql = "SELECT * FROM menurol WHERE idmenu = '" . $this->getObjMenu->getIdMenu() . "'";
+
+        // Consulta filtrando por la CLAVE COMPUESTA (idmenu Y idrol)
+        $sql = "SELECT * FROM menurol 
+                WHERE idmenu = '" . $this->getObjMenu()->getIdMenu() . "' 
+                AND idrol = '" . $this->getObjRol()->getIdRol() . "'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 if ($registro = $bd->Registro()) {
-                    $this->setObjMenu->setIdMenu($registro['idmenu']);
-                    $this->setObjRol->setIdRol($registro['idrol']);
+                    // NECESITAS CREAR LOS OBJETOS MENU Y ROL PRIMERO
+                    $objM = new Menu();
+                    $objR = new Rol();
+
+                    // Se asume que Menu/Rol tienen un método setIdMenu/setIdRol
+                    $objM->setIdMenu($registro['idmenu']);
+                    $objR->setIdRol($registro['idrol']);
+
+                    // Se asume que Menu/Rol tienen un método cargar() o similar para obtener el resto de los datos
+                    // $objM->obtenerPorId(); 
+                    // $objR->obtenerPorId();
+
+                    // Seteamos los objetos completos en menuRol
+                    $this->setObjMenu($objM);
+                    $this->setObjRol($objR);
                     $respuesta = true;
                 }
             } else {
-                $this->setMensajeError("menu->obtenerPorId: " . $bd->getError());
+                $this->setMensajeError("menuRol->obtenerPorId: " . $bd->getError());
             }
         } else {
-            $this->setMensajeError("menu->obtenerPorId: " . $bd->getError());
+            $this->setMensajeError("menuRol->obtenerPorId: " . $bd->getError());
         }
         return $respuesta;
     }
- /**
-     * Obtiene una colección (array) de objetos Menu que cumplen una condición 
-     * o todos los registros si no se especifica condición.
-     * * @param string
-     * @return array 
-     */
+
     public static function listar($condicion = "")
     {
-        $arregloMenu = [];
+        $arregloMenuRol = [];
         $bd = new BaseDatos();
         $sql = "SELECT * FROM menurol ";
 
@@ -143,25 +146,25 @@ class menuRol
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
-
                 while ($registro = $bd->Registro()) {
-                    $menu = new menuRol();
-                    $menu->setObjMenu->setIdMenu($registro['idmenu']);
-                    $menu->setObjRol->setIdRol($registro['idrol']);
-                    array_push($arregloMenu, $menu);
+                    $menuRol = new menuRol();
+
+                    // CREAR INSTANCIAS DE LOS OBJETOS RELACIONADOS
+                    $objM = new Menu();
+                    $objR = new Rol();
+
+                    // SÓLO SETEAR EL ID (La carga completa se hace fuera o en otro método)
+                    $objM->setIdMenu($registro['idmenu']);
+                    $objR->setIdRol($registro['idrol']);
+
+                    // Cargar el objeto menuRol
+                    $menuRol->setear($objM, $objR);
+
+                    array_push($arregloMenuRol, $menuRol);
                 }
-            } else {
-                // Manejo de error si la ejecución falla
-                // Nota: En un método estático, el error debería manejarse de otra forma
-                // Ej: Loggear o lanzar una excepción, ya que no podemos usar $this->setMensajeError.
-                // Para simplicidad, aquí solo imprimiremos:
-                // echo "Error al listar: " . $bd->getError(); 
             }
-        } else {
-            // Manejo de error si la conexión falla
-            // echo "Error de conexión: " . $bd->getError();
         }
 
-        return $arregloMenu;
+        return $arregloMenuRol;
     }
 }

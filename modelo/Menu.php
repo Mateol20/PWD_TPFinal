@@ -84,15 +84,16 @@ class Menu
     {
         $respuesta = false;
         $bd = new BaseDatos();
-        // 1. Manejo de idPadre (debe ser NULL si no hay padre)
         $idPadreSQL = $this->getIdPadre() === null ? 'NULL' : $this->getIdPadre();
-        // 2. Manejo de meDeshabilitado (debe ser NULL o un valor entre comillas)
         $meDeshabilitadoSQL = $this->getMeDeshabilitado() === null ? 'NULL' : "'" . $this->getMeDeshabilitado() . "'";
         $sql = "INSERT INTO menu (menombre, medescripcion, idpadre, medeshabilitado) 
             VALUES ('{$this->getMeNombre()}', '{$this->getMeDescripcion()}', 
                     {$idPadreSQL}, {$meDeshabilitadoSQL})";
         if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
+            $idGenerado = $bd->Ejecutar($sql);
+
+            if ($idGenerado > 0) {
+                $this->setIdMenu($idGenerado);
                 $respuesta = true;
             } else {
                 $this->setMensajeError("menu->insertar: " . $bd->getError());
@@ -100,7 +101,6 @@ class Menu
         } else {
             $this->setMensajeError("menu->insertar: " . $bd->getError());
         }
-
         return $respuesta;
     }
 

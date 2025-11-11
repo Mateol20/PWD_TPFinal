@@ -1,117 +1,121 @@
 <?php
-// ... (Aquí irían las clases menuRol, BaseDatos, Menu y Rol definidas arriba)
-include_once '../configuracion.php';
-echo "<h1>Testing de la Clase menuRol</h1>";
+// ====================================================================
+// !!! INCLUIR ARCHIVOS REQUERIDOS !!!
+// ====================================================================
+// Asegúrate de que configuracion.php incluya Menu.php, Rol.php, menuRol.php y BaseDatos.php
+require_once '../configuracion.php';
 
-// --- Datos de Prueba ---
-$menu1 = new Menu(10);
-$rol1 = new Rol(1);
+// Variables para almacenar los IDs de los registros de prueba
+$idMenuPrueba = null;
+$idRolPrueba = null;
 
-// =======================================================
-// 1. Prueba de INSERCIÓN
-// =======================================================
-echo "<h2>1. Prueba de Insertar</h2>";
-$dbMockInsert = new BaseDatos(true); // Simula éxito
-$menuRolInsert = new menuRol();
-$menuRolInsert->setear($menu1, $rol1);
+// ====================================================================
 
-// Sobrescribir BaseDatos dentro del método insertar para usar el Mock
-// (Esto es una técnica de testing simple. Idealmente se usaría Inyección de Dependencias)
-$reflectionInsert = new ReflectionMethod('menuRol', 'insertar');
-$reflectionInsert->setAccessible(true);
-$reflectionInsert->invoke($menuRolInsert); // Ejecuta el método
+echo "\n## 🚀 Iniciando Test Funcional de menuRol 🚀\n";
+echo "--------------------------------------------------------\n";
 
-// Simula la llamada real que generaría el SQL:
-// $sql = "INSERT INTO menursol (idmenu, idrol) VALUES ('10','1')"; 
-// Verifique la salida de [SQL Ejecutada] para confirmar la consulta.
+// --- Paso 0: SETUP - Insertar dependencias (Menu y Rol) ---
+echo "### 0. SETUP: Creando dependencias (Menu y Rol) ###\n";
 
-// =======================================================
-// 2. Prueba de ELIMINACIÓN
-// =======================================================
-echo "<h2>2. Prueba de Eliminar</h2>";
-$dbMockDelete = new BaseDatos(true); 
-$menuRolDelete = new menuRol();
-$menuRolDelete->setObjMenu($menu1); // Solo necesita el Menu para el ID
+// 0.1 Crear y guardar un Menu de prueba
+$menuTest = new Menu();
+$menuTest->setear(null, "Menu Test Rol", "Para la relación de prueba", null, null);
 
-// Sobrescribir BaseDatos dentro del método eliminar
-$reflectionDelete = new ReflectionMethod('menuRol', 'eliminar');
-$reflectionDelete->setAccessible(true);
-$reflectionDelete->invoke($menuRolDelete);
-
-// Simula la llamada real que generaría el SQL:
-// $sql = "DELETE FROM menurol WHERE idmenu = '10'"; 
-// Verifique la salida de [SQL Ejecutada] para confirmar la consulta.
-
-
-// =======================================================
-// 3. Prueba de MODIFICACIÓN
-// =======================================================
-echo "<h2>3. Prueba de Modificar</h2>";
-$menu2 = new Menu(10); // Mismo ID para UPDATE
-$rol2 = new Rol(2); // Nuevo ID de Rol para la modificación
-$dbMockUpdate = new BaseDatos(true); 
-$menuRolUpdate = new menuRol();
-$menuRolUpdate->setear($menu2, $rol2);
-
-// Sobrescribir BaseDatos dentro del método modificar
-$reflectionUpdate = new ReflectionMethod('menuRol', 'modificar');
-$reflectionUpdate->setAccessible(true);
-$reflectionUpdate->invoke($menuRolUpdate);
-
-// Simula la llamada real que generaría el SQL (Atención al bug del código original):
-// $sql = "UPDATE menurol SET idmenu = '10', idrol = '2', WHERE idmenu = '10'";
-// Verifique la salida de [SQL Ejecutada] y note la coma extra antes de WHERE (bug en el código original).
-
-
-// =======================================================
-// 4. Prueba de OBTENER POR ID (lectura)
-// =======================================================
-echo "<h2>4. Prueba de ObtenerPorId</h2>";
-$registroEsperado = ['idmenu' => 50, 'idrol' => 5];
-$dbMockGet = new BaseDatos(true, [$registroEsperado]);
-$menuGet = new Menu(50); 
-$menuRolGet = new menuRol();
-$menuRolGet->setObjMenu($menuGet); // Establece el objeto Menu con el ID a buscar
-
-// Sobrescribir BaseDatos dentro del método obtenerPorId
-$reflectionGet = new ReflectionMethod('menuRol', 'obtenerPorId');
-$reflectionGet->setAccessible(true);
-$resultado = $reflectionGet->invoke($menuRolGet);
-
-echo "Resultado: " . ($resultado ? 'ÉXITO' : 'FALLO') . "\n";
-// Se espera que falle en la parte de setear si no se instancian los objetos Menu/Rol.
-// El código del usuario usa $this->getObjMenu->getIdMenu(), que es incorrecto para un objeto.
-// Debería ser $this->getObjMenu()->getIdMenu() si es un objeto, o si espera el ID, solo $this->getObjMenu().
-
-// Si el método setObjMenu/setObjRol en menuRol estuvieran corregidos para instanciar objetos:
-/*
-if ($resultado) {
-    echo "ID Menú Cargado: " . $menuRolGet->getObjMenu()->getIdMenu() . "\n"; // Debe ser 50
-    echo "ID Rol Cargado: " . $menuRolGet->getObjRol()->getIdRol() . "\n";   // Debe ser 5
+if ($menuTest->insertar()) {
+    $idMenuPrueba = $menuTest->getIdMenu();
+    echo "✅ Menú de prueba creado con ID: {$idMenuPrueba}\n";
+} else {
+    echo "❌ ERROR FATAL: No se pudo crear el Menu de prueba. Mensaje: " . $menuTest->getMensajeError() . "\n";
+    die();
 }
-*/
 
-// =======================================================
-// 5. Prueba de LISTAR (lectura de colección)
-// =======================================================
-echo "<h2>5. Prueba de Listar</h2>";
-$registrosListar = [
-    ['idmenu' => 11, 'idrol' => 1],
-    ['idmenu' => 12, 'idrol' => 2]
-];
+// 0.2 Crear y guardar un Rol de prueba
+$rolTest = new Rol();
+$rolTest->setDescripcion("Rol Test Menu");
 
-// Usamos el Mock de BaseDatos para devolver los registros
-$dbMockListar = new BaseDatos(true, $registrosListar);
+if ($rolTest->insert()) { // <-- ÚNICA INSERCIÓN DE ROL. El ID queda guardado en $rolTest.
+    $idRolPrueba = $rolTest->getIdRol();
+    echo "✅ Rol de prueba creado con ID: {$idRolPrueba}\n";
+} else {
+    echo "❌ ERROR FATAL: No se pudo crear el Rol de prueba. Mensaje: (Revisa la salida de Rol::insert)\n";
+    die();
+}
 
-// Reemplazar la instancia de BaseDatos dentro del método estático `listar`
-// Esto es complejo sin un framework. Simularemos la llamada y comprobaremos el SQL.
-menuRol::$bd = $dbMockListar; // No es posible, el método es estático y $bd es local
+// --------------------------------------------------------
 
-// Llamada directa (el mock de BaseDatos mostrará la consulta SELECT)
-$lista = menuRol::listar("idrol = 1");
+// ===============================================
+// 1. TEST DE INSERCIÓN (CREATE) en menuRol
+// ===============================================
+echo "### 1. Test de Inserción (Crear Relación) ###\n";
 
-echo "Elementos listados: " . count($lista) . "\n"; 
-// Debería intentar devolver 2 elementos si el Mock de BaseDatos es local.
-// La consulta SQL debería ser: SELECT * FROM menurol WHERE idrol = 1
+$relacion = new menuRol();
+// Usamos los objetos Menu y Rol que ya tienen IDs válidos.
+$relacion->setear($menuTest, $rolTest);
 
-?>
+if ($relacion->insertar()) {
+    echo "✅ Éxito: Relación (Menú {$idMenuPrueba} -> Rol {$idRolPrueba}) insertada en menuRol.\n";
+} else {
+    echo "❌ Fallo: Error al insertar la relación.\n";
+    echo "Mensaje de error: " . $relacion->getMensajeError() . "\n";
+}
+
+echo "--------------------------------------------------------\n";
+
+// ===============================================
+// 2. TEST DE OBTENER POR ID (READ)
+// ===============================================
+echo "### 2. Test de Obtener Por ID (Leer Relación) ###\n";
+
+$relacionLeida = new menuRol();
+// Inicializamos la búsqueda con los IDs que esperamos encontrar.
+$menuBusqueda = new Menu();
+$menuBusqueda->setIdMenu($idMenuPrueba);
+$rolBusqueda = new Rol();
+$rolBusqueda->setIdRol($idRolPrueba);
+
+$relacionLeida->setear($menuBusqueda, $rolBusqueda);
+
+if ($relacionLeida->obtenerPorId()) {
+    echo "✅ Éxito: Relación leída.\n";
+    echo "  IDs recuperados: Menu ID " . $relacionLeida->getObjMenu()->getIdMenu() .
+        " y Rol ID " . $relacionLeida->getObjRol()->getIdRol() . "\n";
+} else {
+    echo "❌ Fallo: No se encontró la relación.\n";
+    echo "Mensaje de error: " . $relacionLeida->getMensajeError() . "\n";
+}
+
+echo "--------------------------------------------------------\n";
+
+// ===============================================
+// 3. CLEANUP - ELIMINACIÓN (DELETE)
+// ===============================================
+echo "### 3. CLEANUP: Eliminando registros de prueba ###\n";
+
+$todoOK = true;
+
+// // 3.1 Eliminar la relación menuRol
+// if ($relacion->eliminar()) {
+//     echo "✅ Éxito: La relación menuRol se eliminó.\n";
+// } else {
+//     echo "❌ Fallo: Error al eliminar la relación menuRol.\n";
+//     $todoOK = false;
+// }
+
+// // 3.2 Eliminar el Rol de prueba
+// if ($rolTest->eliminar($idRolPrueba)) {
+//     echo "✅ Éxito: Rol de prueba eliminado.\n";
+// } else {
+//     echo "❌ Fallo: Error al eliminar el Rol de prueba.\n";
+//     $todoOK = false;
+// }
+
+// // 3.3 Eliminar el Menu de prueba
+// if ($menuTest->eliminar()) {
+//     echo "✅ Éxito: Menu de prueba eliminado.\n";
+// } else {
+//     echo "❌ Fallo: Error al eliminar el Menu de prueba.\n";
+//     $todoOK = false;
+// }
+
+// echo "--------------------------------------------------------\n";
+// echo "## 🏁 Test menuRol Finalizado 🏁\n";
