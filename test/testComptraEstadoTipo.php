@@ -7,19 +7,21 @@ $abm = new ABMCompraEstadoTipo();
 // 🔸 1. Alta (insertar nuevo registro)
 echo "<h3>🔸 Prueba de alta()</h3>";
 $nuevo = [
-    'cetdescripcion' => 'En preparación',
-    'cetdetalle' => 'La compra fue registrada y está en proceso de armado'
+    'idcompraestadotipo' => 5,
+    'cetdescripcion' => 'por ahi',
+    'cetdetalle' => 'alala'
 ];
 
-if ($abm->alta($nuevo)) {
-    echo "✅ Alta realizada correctamente.<br>";
-} else {
-    echo "❌ Error al realizar el alta: " . $abm->getMensajeError() . "<br>";
-}
+// if ($abm->alta($nuevo)) {
+//     echo "✅ Alta realizada correctamente.<br>";
+// } else {
+//     echo "❌ Error al realizar el alta: " . $abm->getMensajeError() . "<br>";
+// }
 
 // 🔸 2. Listar todos
 echo "<h3>🔸 Prueba de listar()</h3>";
 $listado = $abm->listar();
+// print_r($listado);
 if ($listado) {
     foreach ($listado as $obj) {
         echo "🧾 {$obj->getIdCompraEstadoTipo()} - {$obj->getCetDescripcion()} - {$obj->getCetDetalle()}<br>";
@@ -30,7 +32,7 @@ if ($listado) {
 
 // 🔸 3. Buscar por ID (suponiendo el último ID insertado)
 echo "<h3>🔸 Prueba de buscar()</h3>";
-$ultimoId = 1; // ⚠️ Cambiar según tus datos reales
+$ultimoId = 5; // ⚠️ Cambiar según tus datos reales
 $buscado = $abm->buscar($ultimoId);
 if ($buscado) {
     echo "✅ Registro encontrado: {$buscado->getCetDescripcion()} - {$buscado->getCetDetalle()}<br>";
