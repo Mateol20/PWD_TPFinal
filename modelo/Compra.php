@@ -55,9 +55,8 @@ class Compra{
     public function modificar(){
         $db = new BaseDatos;
             $sql = "UPDATE compra 
-            SET cofecha = CURRENT_TIMESTAMP, 
-                idusuario = " . $this->getIdUsuario() . " 
-            WHERE idcompra = " . $this->getIdCompra();
+            SET cofecha = CURRENT_TIMESTAMP
+            WHERE idcompra = '" . $this->getIdCompra() . "'"; 
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){

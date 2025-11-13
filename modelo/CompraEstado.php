@@ -74,7 +74,7 @@ class CompraEstado{
     public function insertar(){
         $salida = false;
         $bd = new BaseDatos;
-        $sql = "INSERT INTO compraestado (idcompra,idcompraestadotipo,fechaini,fechafin) VALUES
+        $sql = "INSERT INTO compraestado (idcompra,idcompraestadotipo,cefechaini,cefechafin) VALUES
         ('" . $this->getIdCompra() . "';'" . $this->getIdCompraEstado() . "';'" . $this->getFechaIni() . "';'" . $this->getFechaFin() . "'";
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){

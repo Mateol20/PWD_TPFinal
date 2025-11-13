@@ -6,7 +6,6 @@ class CompraItem {
     private $ciCantidad;
 
     public function __construct() {
-        $this->idCompraItem = '';
         $this->idProducto = '';
         $this->idCompra = '';
         $this->ciCantidad = '';

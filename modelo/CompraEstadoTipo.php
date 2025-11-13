@@ -4,10 +4,9 @@ class CompraEstadoTipo {
     private $cetDescripcion;
     private $cetDetalle;
 
-    public function __construct($idCompraEstadoTipo = null, $cetDescripcion = "", $cetDetalle = "") {
-        $this->idCompraEstadoTipo = $idCompraEstadoTipo;
-        $this->cetDescripcion = $cetDescripcion;
-        $this->cetDetalle = $cetDetalle;
+    public function __construct() {
+        $this->cetDescripcion = '';
+        $this->cetDetalle = '';
     }
 
     public function getIdCompraEstadoTipo() {
