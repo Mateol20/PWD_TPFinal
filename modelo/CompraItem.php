@@ -4,13 +4,16 @@ class CompraItem {
     private $idProducto;
     private $idCompra;
     private $ciCantidad;
+    private $mensajeError;
 
     public function __construct() {
         $this->idProducto = '';
         $this->idCompra = '';
         $this->ciCantidad = '';
+        $this->mensajeError = "";
     }
 
+        // GETTERS
     public function getidCompraItem() {
         return $this->idCompraItem;
     }
@@ -26,7 +29,8 @@ class CompraItem {
     public function getCiCantidad() {
         return $this->ciCantidad;
     }
-
+    public function getMensajeError(){return $this->mensajeError;}
+    // SETTERS
     public function setidCompraItem($idCompraItem) {
         $this->idCompraItem = $idCompraItem;
     }
@@ -42,6 +46,7 @@ class CompraItem {
     public function setCiCantidad($ciCantidad) {
         $this->ciCantidad = $ciCantidad;
     }
+    public function setMensajeError($mensaje){$this->mensajeError = $mensaje;}
 
     public function setear($idProducto, $idCompra, $ciCantidad) {
         $this->idProducto = $idProducto;
@@ -56,30 +61,30 @@ class CompraItem {
             if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->insert :".$bd->getError());
             }
         }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->insert :".$bd->getError());
             }
         return $salida;
     }
 
     public function modificar(){
         $salida = false;
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "UPDATE compraitem SET
         idproducto = '{$this->getidProducto()}' ,
         idcompra = '{$this->getIdCompra()}' ,
         cicantidad = '{$this->getCiCantidad()}'
         WHERE idcompraitem = '{$this->getIdCompraItem()}' " ; 
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $db->getError();
+                $this->setMensajeError("Compra Item->modificar :".$bd->getError());
             }
         }else{
-                $db->getError();
+                $this->setMensajeError("Compra Item->modificar :".$bd->getError());
             }
         return $salida;
     }
@@ -92,10 +97,10 @@ class CompraItem {
             if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->eliminar :".$bd->getError());
             }
         }else{
-                $bd->getError();
+               $this->setMensajeError("Compra Item->eliminar :".$bd->getError());
             }
         return $salida;
     }
@@ -113,10 +118,10 @@ class CompraItem {
                 $row['cicantidad']);
                 $salida = $obj;
             }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->obtener :".$bd->getError());            
             }
         }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->obtener :".$bd->getError());
             }
         return $salida;
     }
@@ -140,13 +145,13 @@ class CompraItem {
                 }
             $salida = $arreglo;
             }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->listar :".$bd->getError());
             }
         }else{
-                $bd->getError();
+                $this->setMensajeError("Compra Item->listar :".$bd->getError());
             }
         return $salida;
     }
 }
-
+ola
 ?>

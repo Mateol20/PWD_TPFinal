@@ -41,11 +41,7 @@ class CompraEstadoTipo {
 
     public function insertar(){
         $bd = new BaseDatos;
-<<<<<<< HEAD
         $sql = "INSERT INTO compraestadotipo (cetdescripcion, cetdetalle) VALUES('" . $this->getCetDescripcion() . "','" . $this->getCetDetalle() . "')";
-=======
-        $sql = "INSERT INTO compraestadotipo (idcompraestadotipo, cetdescripcion, cetdetalle) VALUES('" . $this->getIdCompraEstadoTipo() . "','"  . $this->getCetDescripcion() . "','" . $this->getCetDetalle() . "')";
->>>>>>> e03b0e29bd87a013804f641c3fcd4c6717da89bb
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;
