@@ -1,47 +1,205 @@
 <?php
-Class abmUsuario{
+class AbmUsuario
+{
+    //Espera como parametro un arreglo asociativo donde las claves coinciden con los uspasss de las variables instancias del objeto
 
-    public function cargarObjUsuario($usuario){
-        $objUsuario = new Usuario;
-        $objUsuario->setear(
-            $usuario['nombre'],
-            $usuario['pass'],
-            $usuario['email']);
-            return $objUsuario;
+    /**
+     * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto
+     * @param array $param
+     * @return Usuario|null
+     */
+    private function cargarObjeto($param)
+    {
+        $obj = null;
+
+        if (
+            array_key_exists('nombre', $param)
+            and array_key_exists('pass', $param)
+            and array_key_exists('mail', $param)
+            and array_key_exists('deshabilitado', $param)
+        ) {
+            $obj = new Usuario();
+
+            $obj->cargar(null, $param["nombre"], $param["pass"], $param["mail"], $param["deshabilitado"]);
+        }
+        return $obj;
     }
 
-    public function insert($usuario){
-        $salida = false;
-        $objUsuario = $this->cargarObjUsuario($usuario);
-        if($objUsuario->insert()){
-            $salida = true;
+    /**
+     * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto que son claves
+     * @param array $param
+     * @return Usuario|null
+     */
+    private function cargarObjetoConClave($param)
+    {
+        $obj = null;
+
+        if (isset($param['id'])) {
+            $obj = new Usuario();
+            $obj->buscar($param["id"]);
         }
-        return $salida;
+        return $obj;
     }
 
-    public function modificar($id, $usuario){
-        $salida = false;
-        $objUsuario = $this->cargarObjUsuario($usuario);
-        if($objUsuario->modificar($id)){
-            $salida = true;
-        }
-        return $salida;
+
+    /**
+     * Corrobora que dentro del arreglo asociativo estan seteados los campos claves
+     * @param array $param
+     * @return boolean
+     */
+
+    private function seteadosCamposClaves($param)
+    {
+        $resp = false;
+        if (isset($param['id']))
+            $resp = true;
+        return $resp;
     }
-    public function eliminar($id){
-        $salida = false;
-        $objUsuario = new Usuario;
-        if($objUsuario->eliminar($id)){
-            $salida = true;
+
+    /**
+     * Permite dar de alta un objeto
+     * @param array $param
+     */
+    public function alta($param)
+    {
+        $resp = array();
+        $elObjtTabla = $this->cargarObjeto($param);
+
+        if ($elObjtTabla != null and $elObjtTabla->insertar()) {
+            $resp = array('resultado' => true, 'error' => '', 'obj' => $elObjtTabla);
+        } else {
+            $resp = array('resultado' => false, 'error' => $elObjtTabla->getMensajeError());
         }
-        return $salida;
+
+        return $resp;
     }
-    public function buscar($name,$pass,$dato = ''){
-        $salida = false;
-        $objUsuario = new Usuario;
-        if($objUsuario -> buscar($name,$pass,$dato = '')){
-            $salida = true;
+    /**
+     * Permite eliminar un objeto
+     * @param array $param
+     * @return boolean
+     */
+    public function baja($param)
+    {
+        $resp = false;
+        if ($this->seteadosCamposClaves($param)) {
+            $elObjtTabla = $this->cargarObjetoConClave($param);
+
+            $elObjtTabla->setDeshabilitado("NOW()");
+
+            if ($elObjtTabla != null and $elObjtTabla->modificar()) {
+                $resp = true;
+            }
         }
-        return $salida;
+
+        return $resp;
+    }
+
+    /**
+     * Permite modificar un objeto
+     * @param array $param
+     * @return boolean
+     */
+    public function modificacion($param)
+    {
+        $resp = false;
+        if ($this->seteadosCamposClaves($param)) {
+            $elObjtTabla = $this->cargarObjeto($param);
+            $elObjtTabla->setId($param["id"]);
+            if ($elObjtTabla != null and $elObjtTabla->modificar()) {
+                $resp = true;
+            }
+        }
+        return $resp;
+    }
+
+    /**
+     * Permite buscar un objeto
+     * @param array $param
+     * @return array
+     */
+    public function buscar($param)
+    {
+        $where = " true ";
+        $claves = ["id", "nombre", "pass", "mail", "deshabilitado"];
+        $db = ["idusuario", "usnombre", "uspass", "usmail", "usdeshabilitado"];
+
+
+        if ($param <> null) {
+            for ($i = 0; $i < count($claves); $i++) {
+                if (isset($param[$claves[$i]])) {
+                    $where .= " and " . $db[$i] . " = '" . $param[$claves[$i]]  . "'";
+                }
+            }
+        }
+
+        $obj = new Usuario();
+        $arreglo = $obj->listar($where);
+        return $arreglo;
+    }
+
+
+    /**
+     * Le otorga un rol al usuario
+     * @param array $param
+     * @return boolean
+     */
+    public function darRol($param)
+    {
+        $resp = false;
+
+        if ($this->seteadosCamposClaves($param) && isset($param["idrol"])) {
+            $objUsuarioRol = new UsuarioRol();
+            $objUsuarioRol->cargarClaves($param["idrol"], $param["id"]);
+            if ($objUsuarioRol->insertar()) {
+                $resp = true;
+            }
+        }
+
+        return $resp;
+    }
+
+    /**
+     * Le quita un rol al usuario
+     * @param array $param
+     * @return boolean
+     */
+    public function quitarRol($param)
+    {
+        $resp = false;
+
+        if ($this->seteadosCamposClaves($param) && isset($param["idrol"])) {
+            $objUsuarioRol = new UsuarioRol();
+            $objUsuarioRol->cargarClaves($param["idrol"], $param["id"]);
+            if ($objUsuarioRol->eliminar()) {
+                $resp = true;
+            }
+        }
+
+        return $resp;
+    }
+
+    /**
+     * Retorna los roles de un usuario
+     * @param array $param
+     * @return array
+     */
+    public function buscarRoles($param)
+    {
+        $where = " true ";
+        $claves = ["id"];
+        $clavesDB = ["idusuario"];
+
+
+        if ($param <> null) {
+            for ($i = 0; $i < count($claves); $i++) {
+                if (isset($param[$claves[$i]])) {
+                    $where .= " and " . $clavesDB[$i] . " = '" . $param[$claves[$i]]  . "'";
+                }
+            }
+        }
+
+        $obj = new UsuarioRol();
+        $arreglo = $obj->listar($where);
+        return $arreglo;
     }
 }
-?>
