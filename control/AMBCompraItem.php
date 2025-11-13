@@ -1,24 +1,24 @@
-<?php 
-class ABMCompraEstadoTipo{
+<?php
+class abmCompraItem{
+        private $mensajeError;
 
-    private $mensajeError;
-
-    public function __construct(){
+    public function __construct()
+    {
         $this->mensajeError = "";
     }
 
-    public function getMensajeError(){
+    public function getMensajeError()
+    {
         return $this->mensajeError;
     }
-    public function setMensajeError($mensaje){
-        $this->mensajeError = $mensaje;
+    public function cargarObj($compra){
+        $objCompra = new CompraItem;
+        $objCompra->setIdProducto($compra['idproducto']);
+        $objCompra->setIdcompra($compra['idcompra']);
+        $objCompra->setCiCantidad($compra['cicantidad']);
+        return $objCompra;
     }
 
-    public function cargarObj($array){
-        $obj = new CompraEstadoTipo;
-        $obj -> setear($array['cetdescripcion'],$array['cetdetalle']); 
-        return $obj;
-    }
     public function alta($array){
         $obj = $this->cargarObj($array);
                 if($obj->insertar()){
@@ -28,11 +28,11 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
-    
-       public function modificar($array, $idCompraEstadoTipo){
+
+    public function modificar($array, $idCompraItem){
         $salida = false;
         $obj = $this->cargarObj($array);
-        $obj ->setIdCompraEstadoTipo($idCompraEstadoTipo);
+        $obj ->setidCompraItem($idCompraItem);
         if($obj->modificar()){
            $salida = true; 
         }else{
@@ -40,10 +40,11 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
-        public function baja($id){
+
+    public function baja($id){
         $salida = false;
-        $obj = new CompraEstadoTipo;
-        $obj -> setIdCompraEstadoTipo($id);
+        $obj = new CompraItem;
+        $obj -> setIdCompraItem($id);
         if($obj->eliminar()){
            $salida = true; 
         }else{
@@ -51,10 +52,11 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
+
     public function buscar($id){
         $salida = false;
-        $obj = new CompraEstadoTipo;
-        $obj -> setIdCompraEstadoTipo($id);
+        $obj = new CompraItem;
+        $obj -> setIdCompraitem($id);
         if($resultado = $obj->obtenerPorId()){
            $salida = $resultado; 
         }else{
@@ -62,9 +64,10 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
-        public function listar(){
+
+    public function listar(){
         $salida = false;
-        $obj = new CompraEstadoTipo;
+        $obj = new CompraItem;
         if($lista = $obj->listar()){
            $salida = $lista; 
         }else{
@@ -73,4 +76,3 @@ class ABMCompraEstadoTipo{
         return $salida;
     }
 }
-?>
