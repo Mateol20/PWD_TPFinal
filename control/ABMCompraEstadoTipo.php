@@ -21,7 +21,11 @@ class ABMCompraEstadoTipo{
     }
     public function alta($array){
         $obj = $this->cargarObj($array);
-                if($obj->insertar()){
+
+        echo $obj -> getCetDescripcion();
+        echo $obj -> getCetDetalle();
+        
+        if($obj->insertar()){
            $salida = true; 
         }else{
             $this->getMensajeError();
@@ -29,7 +33,7 @@ class ABMCompraEstadoTipo{
         return $salida;
     }
     
-       public function modificar($array, $idCompraEstadoTipo){
+    public function modificar($array, $idCompraEstadoTipo){
         $salida = false;
         $obj = $this->cargarObj($array);
         $obj ->setIdCompraEstadoTipo($idCompraEstadoTipo);
@@ -40,7 +44,7 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
-        public function baja($id){
+    public function baja($id){
         $salida = false;
         $obj = new CompraEstadoTipo;
         $obj -> setIdCompraEstadoTipo($id);
@@ -62,7 +66,7 @@ class ABMCompraEstadoTipo{
         }
         return $salida;
     }
-        public function listar(){
+    public function listar(){
         $salida = false;
         $obj = new CompraEstadoTipo;
         if($lista = $obj->listar()){
