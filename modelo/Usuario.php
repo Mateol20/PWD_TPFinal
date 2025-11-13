@@ -80,46 +80,35 @@ class Usuario
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
-                echo 'Usuario agregado👍';
             } else {
-                echo ('entro 1');
-                $db->getError();
+            $this->setMensajeError("Usuario->insertar: ". $db->getError()); $db->getError();
             }
         } else {
-            echo ('entro 2');
-            $db->getError();
+           $this->setMensajeError("Usuario->insertar: ". $db->getError());
         }
         return $salida;
     }
 
-    public function modificar($id)
+    public function modificar()
     {
-        $this->setId($id);
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
+        $respuesta = false;
         $sql = "UPDATE Usuario SET 
             usnombre = '" . $this->getNombre() . "',
             uspass = '" . $this->getPass() . "',
             usmail = '" . $this->getEmail() . "' 
             WHERE idusuario = '" . $this->getId() . ";'";
-        if ($db->Iniciar()) {
-            if ($db->Ejecutar($sql)) {
-                echo "nice";
+
+                if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($sql)) {
+                $respuesta = true;
             } else {
-                $error = $db->getError();
-                if (is_array($error)) {
-                    echo implode(' | ', $error);
-                } else {
-                    echo $error;
-                }
+                $this->setMensajeError("rol->modificar: " . $bd->getError());
             }
         } else {
-            $error = $db->getError();
-            if (is_array($error)) {
-                echo implode(' | ', $error);
-            } else {
-                echo $error;
-            }
+            $this->setMensajeError("rol->modificar: " . $bd->getError());
         }
+        return $respuesta;
     }
 
     public function eliminar($id)
@@ -136,32 +125,38 @@ class Usuario
         }
         return $salida;
     }
-    public function buscar($name, $pass, $datos)
+      /**
+     * Busca un rol por id
+     * Sus datos son colocados en el objeto
+     * @param string $id
+     * @return boolean true si encontro, false caso contrario
+     */
+    public function buscar($id)
     {
-        $db = new BaseDatos;
-        $salida = false;
-        $sql = "SELECT '" . $datos . "' FROM usuario WHERE usnombre = '" . $name . "' && uspass" . $pass . "'";
-        if ($db->Iniciar()) {
-            if ($db->Ejecutar($sql)) {
-                echo "nice";
-                $salida = true;
-            } else {
-                $error = $db->getError();
-                if (is_array($error)) {
-                    echo implode(' | ', $error);
-                } else {
-                    echo $error;
+        $bd = new BaseDatos();
+        $respuesta = false;
+        $sql = "SELECT * FROM usuario WHERE idusuario = '" . $id . "'";
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($sql)) {
+                if ($fila = $bd->Registro()) {
+                    $this->cargar(
+                        $fila['idusuario'],
+                        $fila['usnombre'],
+                        $fila['uspass'],
+                        $fila['usmail']
+                    );
+
+                    $respuesta = true;
                 }
+            } else {
+                $this->setMensajeError("usuario->buscar: " . $bd->getError());
             }
         } else {
-            $error = $db->getError();
-            if (is_array($error)) {
-                echo implode(' | ', $error);
-            } else {
-                echo $error;
-            }
+            $this->setMensajeError("usuario->buscar: " . $bd->getError());
         }
-        return $salida;
+
+        return $respuesta;
     }
     public function listar($condicion = "")
     {

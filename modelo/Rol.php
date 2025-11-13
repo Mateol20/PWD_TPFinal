@@ -66,7 +66,7 @@ class Rol
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
-                if ($fila = $this->Registro()) {
+                if ($fila = $bd->Registro()) {
                     $this->cargar(
                         $id,
                         $fila["roldescripcion"]
@@ -102,7 +102,7 @@ class Rol
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 $arreglo = [];
-                while ($fila = $this->Registro()) {
+                while ($fila = $bd->Registro()) {
                     $objRol = new Rol();
                     $objRol->cargar($fila["idrol"], $fila["roldescripcion"]);
                     array_push($arreglo, $objRol);
@@ -152,13 +152,13 @@ class Rol
     public function modificar()
     {
         $bd = new BaseDatos();
-        $seConcreto = false;
+        $respuesta = false;
 
         $sql = "UPDATE rol SET roldescripcion = '" . $this->getRolDescripcion() . "' WHERE idrol = '" . $this->getId() . "'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
-                $seConcreto = true;
+                $respuesta = true;
             } else {
                 $this->setMensajeOperacion("rol->modificar: " . $bd->getError());
             }
@@ -166,7 +166,7 @@ class Rol
             $this->setMensajeOperacion("rol->modificar: " . $bd->getError());
         }
 
-        return $seConcreto;
+        return $respuesta;
     }
 
     /**
@@ -176,13 +176,13 @@ class Rol
     public function eliminar()
     {
         $bd = new BaseDatos();
-        $seConcreto = false;
+        $respuesta = false;
 
         $sql = "DELETE FROM rol WHERE idrol = '" . $this->getId() . "'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
-                $seConcreto = true;
+                $respuesta = true;
             } else {
                 $this->setMensajeOperacion("rol->eliminar: " . $bd->getError());
             }
@@ -190,6 +190,6 @@ class Rol
             $this->setMensajeOperacion("rol->eliminar: " . $bd->getError());
         }
 
-        return $seConcreto;
+        return $respuesta;
     }
 }
