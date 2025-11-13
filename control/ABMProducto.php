@@ -1,5 +1,6 @@
 <?php
-class ABMProducto{
+class ABMProducto
+{
     private $mensajeError;
 
     public function __construct()
@@ -7,7 +8,10 @@ class ABMProducto{
         $this->mensajeError = "";
     }
 
-    public function getMensajeError(){return $this->mensajeError;}
+    public function getMensajeError()
+    {
+        return $this->mensajeError;
+    }
 
     /**
      * Espera un array de parámetros (ej: $_POST) y crea la instancia de Menu.
@@ -18,13 +22,28 @@ class ABMProducto{
     {
         $obj = null;
         $obj = new Producto();
-            $obj->setear(
-                $datos['pronombre'] ?? '',
-                $datos['prodetalle'] ?? '',
-                $datos['procantstack']
-            );
+        $obj->setear(
+            $datos['pronombre'] ?? '',
+            $datos['prodetalle'] ?? '',
+            $datos['procantstack']
+        );
     }
-     /**
+    /**
+     * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto que son claves
+     * @param array $param
+     * @return Rol|null
+     */
+    private function cargarObjetoConClave($param)
+    {
+        $obj = null;
+
+        if (isset($param['id'])) {
+            $obj = new Producto();
+            $obj->buscar($param["id"]);
+        }
+        return $obj;
+    }
+    /**
      * Espera un array de búsqueda y devuelve una colección de objetos Menu.
      * @param array $param
      * @return array
@@ -34,7 +53,6 @@ class ABMProducto{
         $where = " true ";
         if ($param != null) {
             foreach ($param as $clave => $valor) {
-                // Si la clave no es numérica, la tratamos como un campo
                 if (is_numeric($valor)) {
                     $where .= " and " . $clave . "=" . $valor;
                 } else {
@@ -81,7 +99,7 @@ class ABMProducto{
             $objProducto = new Producto();
             $objProducto->setIdProducto($datos['idproducto']);
 
-            if ($objProducto->obtenerPorId()) {
+            if ($objProducto->buscar()) {
                 if ($objProducto->eliminar()) {
                     $res = true;
                 } else {

@@ -1,5 +1,6 @@
 <?php
-class Producto{
+class Producto
+{
     private $idProducto;
     private $proNombre;
     private $proDetalle;
@@ -14,19 +15,34 @@ class Producto{
         $this->proCantStock = "";
     }
     //GETTERS
-    public function getIdProducto(){return $this->idProducto;}
-    public function getProNombre(){return $this->proNombre;}
-    public function getProDetalle(){return $this->proDetalle;}
-    public function getProCantStock(){return $this->proCantStock;}
-    public function getMensajeError(){return $this->mensajeError;}
+    public function getIdProducto()
+    {
+        return $this->idProducto;
+    }
+    public function getProNombre()
+    {
+        return $this->proNombre;
+    }
+    public function getProDetalle()
+    {
+        return $this->proDetalle;
+    }
+    public function getProCantStock()
+    {
+        return $this->proCantStock;
+    }
+    public function getMensajeError()
+    {
+        return $this->mensajeError;
+    }
     //SETTERS
     public function setIdProducto($idProducto)
     {
-        $this->idProducto=$idProducto;
+        $this->idProducto = $idProducto;
     }
     public function setProNombre($proNombre)
     {
-        $this->proNombre=$proNombre;
+        $this->proNombre = $proNombre;
     }
     public function setProDetalle($proDetalle)
     {
@@ -36,18 +52,18 @@ class Producto{
     {
         $this->proCantStock = $proCantStock;
     }
-        public function setMensajeError($mensajeError)
+    public function setMensajeError($mensajeError)
     {
         $this->mensajeError = $mensajeError;
     }
-        // --- Métodos de Persistencia
-    public function setear($proNombre,$proDetalle,$proCantStock)
+    // --- Métodos de Persistencia
+    public function setear($proNombre, $proDetalle, $proCantStock)
     {
         $this->setProNombre($proNombre);
         $this->setProDetalle($proDetalle);
         $this->setProCantStock($proCantStock);
     }
-        public function insertar()
+    public function insertar()
     {
         $respuesta = false;
         $bd = new BaseDatos();
@@ -71,7 +87,7 @@ class Producto{
     {
         $respuesta = false;
         $bd = new BaseDatos();
-                $sql = "DELETE FROM producto WHERE idproducto = '{$this->getIdProducto()}'";
+        $sql = "DELETE FROM producto WHERE idproducto = '{$this->getIdProducto()}'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
@@ -100,19 +116,19 @@ class Producto{
                 $respuesta = true;
             } else {
                 $this->setMensajeError("menu->modificar: " . $bd->getError());
-            }       
+            }
         } else {
             $this->setMensajeError("menu->modificar: " . $bd->getError());
         }
 
         return $respuesta;
     }
-    public function obtenerPorId()
+    public function buscar()
     {
         $respuesta = false;
         $bd = new BaseDatos();
         $sql = "SELECT * FROM producto WHERE idproducto = '" . $this->getIdProducto() . "'";
-                if ($bd->Iniciar()) {
+        if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 if ($registro = $bd->Registro()) {
                     $this->setProNombre($registro['pronombre']);
@@ -128,9 +144,8 @@ class Producto{
         }
         return $respuesta;
     }
-     public static function listar($condicion = "")
+    public static function listar($condicion = "")
     {
-        $arregloProducto = [];
         $bd = new BaseDatos();
         $sql = "SELECT * FROM menu ";
 
@@ -140,22 +155,24 @@ class Producto{
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
+                $arreglo = [];
+                while ($fila = $bd->Registro()) {
+                    $objProducto = new Producto();
+                    $objProducto->setear(
+                        $fila["pronombre"],
+                        $fila["prodetalle"],
+                        $fila["procantstock"]
+                    );
 
-                while ($registro = $bd->Registro()) {
-                    $producto = new Producto();
-                    $producto->setProNombre($registro['pronombre']);
-                    $producto->setProDetalle($registro['prodetalle']);
-                    $producto->setProCantStock($registro['procantstock']);
-                    $producto->setIdProducto($registro['idproducto']);
-                    array_push($arregloMenu, $producto);
+                    array_push($arreglo, $objProducto);
                 }
             } else {
-                echo "Error al listar: " . $bd->getError(); 
+                $this->setMensajeError("producto->listar: " . $bd->getError());
             }
         } else {
-            echo "Error de conexión: " . $bd->getError();
+            $this->setMensajeError("producto->listar: " . $bd->getError());
         }
 
-        return $arregloMenu;
+        return $arreglo;
     }
 }
