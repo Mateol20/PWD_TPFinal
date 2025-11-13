@@ -14,7 +14,7 @@ class ABMCompraEstado{
         $this->mensajeError = $mensaje;
     }
 
-    public function cargarObj($array){
+    public function cargarObj($array){  
         $obj = new CompraEstado;
         $obj -> setIdCompra($array['idcompra']);
         $obj -> setIdCompraEstadoTipo($array['idcompraestadotipo']);
@@ -32,10 +32,11 @@ class ABMCompraEstado{
         return $salida;
     }
     
-    public function modificar($array, $idCompraEstado){
+    public function modificar($array){
         $salida = false;
-        $obj = $this->cargarObj($array);
-        $obj ->setIdCompraEstado($idCompraEstado);
+        $obj = new CompraEstado;
+        $obj -> setIdCompraEstadoTipo($array['idcompraestadotipo']);
+        $obj -> setIdCompraEstado($array['idcompraestado']);
         if($obj->modificar()){
            $salida = true; 
         }else{

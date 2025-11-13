@@ -9,6 +9,7 @@ echo "<h3>🔸 Prueba de alta()</h3>";
 // Datos para un nuevo registro de CompraEstado
 // Asegúrate de que el idcompra y idcompraestadotipo existen en sus respectivas tablas
 $datosNuevo = [
+    'idcompraestado' => 1, // ID de una compra existente
     'idcompra' => 6, // ID de una compra existente
     'idcompraestadotipo' => 3, // ID de un tipo de estado de compra existente (ej. 'iniciada')
     'cefechaini' => null,//date('Y-m-d H:i:s'), // O dejar null para que la DB ponga CURRENT_TIMESTAMP
@@ -69,9 +70,9 @@ $idModificar = 11;
 if ($idModificar !== null) {
     $datosModificar = [
         'idcompraestadotipo' => 3, // Cambiamos a otro tipo de estado (ej. 'en proceso')
-        'idcompra' => 6 // Establecemos una fecha de fin
+        'idcompraestado' => 1 // Establecemos una fecha de fin
     ];
-    if ($abm->modificar($datosModificar,10)) {
+    if ($abm->modificar($datosModificar)) {
         echo "✅ Modificación exitosa del CompraEstado con ID {$idModificar}.<br>";
         // Verificamos que se haya modificado
         $verificar = $abm->buscar($idModificar);

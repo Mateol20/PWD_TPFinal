@@ -90,8 +90,7 @@ class CompraEstado{
         $salida = false;
         $bd = new BaseDatos;
         $sql = "UPDATE compraestado SET 
-        (idcompra = '{$this->getIdCompra()}' , idcompraestadotipo = '{$this->getIdCompraEstadoTipo()}' , idcompra = '{$this->getIdCompra()}' , 
-        idfechaini = '{$this->getFechaIni()}' , fechafin = '{$this->getFechaFin()}'";
+        (idcompraestadotipo = '" . $this->getIdCompraEstadoTipo() . "', fechacefin ='". date('Y-m-d H:i:s') . "' WHERE idcompraestado ='" . $this->getIdCompraEstado() . "')";
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;

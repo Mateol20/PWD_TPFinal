@@ -153,5 +153,5 @@ class CompraItem {
         return $salida;
     }
 }
-ola
+
 ?>
