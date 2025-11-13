@@ -34,6 +34,11 @@ class CompraEstadoTipo {
         $this->cetDetalle = $cetDetalle;
     }
 
+    public function setear($desc,$detalle){
+        $this->setCetDescripcion($desc);
+        $this->setCetDetalle($detalle);
+    }
+
     public function insertar(){
         $bd = new BaseDatos;
         $sql = "INSERT INTO compraestadotipo VALUES('" . $this->getCetDescripcion() . "','" . $this->getCetDetalle() . "'";
@@ -64,6 +69,68 @@ class CompraEstadoTipo {
             }
         }else{
                 $db->getError();
+            }
+        return $salida;
+    }
+
+        public function eliminar(){
+        $salida = false;
+        $bd = new BaseDatos;
+        $sql = "DELETE FROM compraestadotipo WHERE idcompraestadotipo='" . $this->getIdCompraEstadoTipo() ."'";
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $salida = true;
+            }else{
+                $bd->getError();
+            }
+        }else{
+                $bd->getError();
+            }
+        return $salida;
+    }
+
+        public function obtenerPorId(){
+        $bd = new BaseDatos;
+        $sql = "SELECT * FROM compraestadotipo WHERE idcompraestadotipo =" . $this->getIdCompraEstadoTipo();
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $row = $bd->Registro();
+                $obj = new CompraEstadoTipo;
+                $obj->setear(
+                $row['cetdescripcion'],
+                $row['cetdetalle']);
+                $salida = $obj;
+            }else{
+                $bd->getError();
+            }
+        }else{
+                $bd->getError();
+            }
+        return $salida;
+    }
+
+       public function listar ($where = ""){
+        $bd = new BaseDatos;
+        $sql = "SELECT * FROM compraestadotipo";
+        if ($where != "") {
+            $sql .= "WHERE ". $where;
+        }
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $arreglo = [];
+                $obj = new CompraEstadoTipo();
+                foreach($bd->Registro() as $row){
+                    $obj->setear(
+                    $row['cetdescripcion'],
+                    $row['cetdetalle']);
+                    array_push($arreglo,$obj);
+                }
+            $salida = $arreglo;
+            }else{
+                $bd->getError();
+            }
+        }else{
+                $bd->getError();
             }
         return $salida;
     }
