@@ -73,59 +73,59 @@ class CompraEstado{
     }
     public function insertar(){
         $salida = false;
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "INSERT INTO compraestado (idcompra,idcompraestadotipo,fechaini,fechafin) VALUES
         ('" . $this->getIdCompra() . "';'" . $this->getIdCompraEstado() . "';'" . $this->getFechaIni() . "';'" . $this->getFechaFin() . "'";
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $db->getError();
+                $bd->getError();
             }
         }else{
-                $db->getError();
+                $bd->getError();
             }
         return $salida;
     }
     public function modificar(){
         $salida = false;
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "UPDATE compraestado SET 
         (idcompra = '{$this->getIdCompra()}' , idcompraestadotipo = '{$this->getIdCompraEstadoTipo()}' , idcompra = '{$this->getIdCompra()}' , 
         idfechaini = '{$this->getFechaIni()}' , fechafin = '{$this->getFechaFin()}'";
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $db->getError();
+                $bd->getError();
             }
         }else{
-                $db->getError();
+                $bd->getError();
             }
         return $salida;
     }
     public function eliminar(){
         $salida = false;
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "DELETE FROM compraestado WHERE idcompraestado='" . $this->getIdCompraEstado() ."'";
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $db->getError();
+                $bd->getError();
             }
         }else{
-                $db->getError();
+                $bd->getError();
             }
         return $salida;
     }
 
     public function obtenerPorId(){
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "SELECT * FROM compraestado WHERE idcompraestado =" . $this->getIdCompraEstado();
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
-                $linea = $db->Registro();
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $linea = $bd->Registro();
                 $obj = new CompraEstado;
                 $obj->setear(
                 $linea['idcompra'],
@@ -134,10 +134,10 @@ class CompraEstado{
                 $linea['fechafin']);
                 $salida = $obj;
             }else{
-                $db->getError();
+                $bd->getError();
             }
         }else{
-                $db->getError();
+                $bd->getError();
             }
         return $salida;
     }
@@ -149,16 +149,16 @@ class CompraEstado{
      * @return array 
      */
     public function listar ($where = ""){
-        $db = new BaseDatos;
+        $bd = new BaseDatos;
         $sql = "SELECT * FROM compraestado";
         if ($where != "") {
             $sql .= "WHERE ". $where;
         }
-        if($db->Iniciar()){
-            if($db->Ejecutar($sql)){
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
                 $arreglo = [];
                 $obj = new CompraEstado;
-                foreach($db->Registro() as $row){
+                foreach($bd->Registro() as $row){
                     $obj->setear(
                     $row['idcompra'],
                     $row['idcompraestado'],
@@ -168,10 +168,10 @@ class CompraEstado{
                 }
             $salida = $arreglo;
             }else{
-                $db->getError();
+                $bd->getError();
             }
         }else{
-                $db->getError();
+                $bd->getError();
             }
         return $salida;
     }
