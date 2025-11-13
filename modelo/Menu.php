@@ -205,15 +205,10 @@ class Menu
                     array_push($arregloMenu, $menu);
                 }
             } else {
-                // Manejo de error si la ejecución falla
-                // Nota: En un método estático, el error debería manejarse de otra forma
-                // Ej: Loggear o lanzar una excepción, ya que no podemos usar $this->setMensajeError.
-                // Para simplicidad, aquí solo imprimiremos:
-                // echo "Error al listar: " . $bd->getError(); 
+           $this->setMensajeError("menu->modificar: " . $bd->getError());
             }
         } else {
-            // Manejo de error si la conexión falla
-            // echo "Error de conexión: " . $bd->getError();
+            $this->setMensajeError("menu->modificar: " . $bd->getError());
         }
 
         return $arregloMenu;

@@ -95,12 +95,10 @@ class menuRol
         return false;
     }
 
-    public function obtenerPorId() // Se asume que el ID es la CLAVE COMPUESTA
+    public function obtenerPorId() 
     {
         $respuesta = false;
         $bd = new BaseDatos();
-
-        // Consulta filtrando por la CLAVE COMPUESTA (idmenu Y idrol)
         $sql = "SELECT * FROM menurol 
                 WHERE idmenu = '" . $this->getObjMenu()->getIdMenu() . "' 
                 AND idrol = '" . $this->getObjRol()->getIdRol() . "'";
@@ -108,19 +106,12 @@ class menuRol
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 if ($registro = $bd->Registro()) {
-                    // NECESITAS CREAR LOS OBJETOS MENU Y ROL PRIMERO
                     $objM = new Menu();
                     $objR = new Rol();
 
-                    // Se asume que Menu/Rol tienen un método setIdMenu/setIdRol
                     $objM->setIdMenu($registro['idmenu']);
                     $objR->setIdRol($registro['idrol']);
 
-                    // Se asume que Menu/Rol tienen un método cargar() o similar para obtener el resto de los datos
-                    // $objM->obtenerPorId(); 
-                    // $objR->obtenerPorId();
-
-                    // Seteamos los objetos completos en menuRol
                     $this->setObjMenu($objM);
                     $this->setObjRol($objR);
                     $respuesta = true;

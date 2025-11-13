@@ -60,7 +60,7 @@ class UsuarioRol
         $objRol = $this->getObjRol();
         $objUsuario = $this->getObjUsuario();
 
-        $objRol->setId($idRol);
+        $objRol->setIdRol($idRol);
         $objUsuario->setId($idUsuario);
 
         $this->setObjRol($objRol);
@@ -97,7 +97,7 @@ class UsuarioRol
                         $objUsuario
                     );
 
-                    $encontro = true;
+                    $respuesta = true;
                 }
             } else {
                 $this->setMensajeError("usuariorol->buscar: " . $bd->getError());
@@ -106,7 +106,7 @@ class UsuarioRol
             $this->setMensajeError("usuariorol->buscar: " . $bd->getError());
         }
 
-        return $encontro;
+        return $respuesta;
     }
 
     /**

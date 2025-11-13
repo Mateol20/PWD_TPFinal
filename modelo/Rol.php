@@ -20,7 +20,7 @@ class Rol
     {
         return $this->id;
     }
-    public function setId($id)
+    public function setIdRol($id)
     {
         $this->id = $id;
     }
@@ -47,7 +47,7 @@ class Rol
      */
     public function cargar($id, $rolDescripcion)
     {
-        $this->setId($id);
+        $this->setIdRol($id);
         $this->setRolDescripcion($rolDescripcion);
     }
 
@@ -133,7 +133,7 @@ class Rol
         if ($bd->Iniciar()) {
             $resp = $bd->Ejecutar($sql);
             if ($resp) {
-                $this->setId($resp);
+                $this->setIdRol($resp);
                 $resultado = true;
             } else {
                 $this->setmensajeoperacion("rol->insertar: " . $bd->getError());
