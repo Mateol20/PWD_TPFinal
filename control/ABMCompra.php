@@ -14,14 +14,15 @@ class abmCompra{
     public function cargarObj($compra){
         $objCompra = new Compra;
         $objCompra->setIdUsuario($compra['idusuario']);
-        $objCompra->setIdUsuario($compra['idcompra']);
+        $objCompra->setIdcompra($compra['idcompra']);
         return $objCompra;
     }
 
     public function alta($idUsuario){
         $salida = false;
         $objCompra = new Compra;
-        if($objCompra->insertar($idUsuario)){
+        $objCompra -> setIdUsuario($idUsuario);
+        if($objCompra->insertar()){
            $salida = true; 
         }else{
             $this->getMensajeError();
