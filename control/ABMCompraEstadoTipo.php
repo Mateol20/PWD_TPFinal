@@ -16,7 +16,10 @@ class ABMCompraEstadoTipo{
 
     public function cargarObj($array){
         $obj = new CompraEstadoTipo;
-        $obj -> setear($array['cetdescripcion'],$array['cetdetalle']); 
+        $obj -> setear(
+            $array['idcompraestadotipo'],
+            $array['cetdescripcion'],
+            $array['cetdetalle']); 
         return $obj;
     }
     public function alta($array){

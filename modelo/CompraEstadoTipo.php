@@ -33,14 +33,19 @@ class CompraEstadoTipo {
         $this->cetDetalle = $cetDetalle;
     }
 
-    public function setear($desc,$detalle){
+    public function setear($id,$desc,$detalle){
+        $this->setIdCompraEstadoTipo($id);
         $this->setCetDescripcion($desc);
         $this->setCetDetalle($detalle);
     }
 
     public function insertar(){
         $bd = new BaseDatos;
+<<<<<<< HEAD
         $sql = "INSERT INTO compraestadotipo (cetdescripcion, cetdetalle) VALUES('" . $this->getCetDescripcion() . "','" . $this->getCetDetalle() . "')";
+=======
+        $sql = "INSERT INTO compraestadotipo (idcompraestadotipo, cetdescripcion, cetdetalle) VALUES('" . $this->getIdCompraEstadoTipo() . "','"  . $this->getCetDescripcion() . "','" . $this->getCetDetalle() . "')";
+>>>>>>> e03b0e29bd87a013804f641c3fcd4c6717da89bb
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;
@@ -96,6 +101,7 @@ class CompraEstadoTipo {
                 $row = $bd->Registro();
                 $obj = new CompraEstadoTipo;
                 $obj->setear(
+                $row['idcompraestadotipo'],
                 $row['cetdescripcion'],
                 $row['cetdetalle']);
                 $salida = $obj;
@@ -117,13 +123,14 @@ class CompraEstadoTipo {
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $arreglo = [];
-                $obj = new CompraEstadoTipo();
-                foreach($bd->Registro() as $row){
+                while($row = $bd->Registro()){
+                    $obj = new CompraEstadoTipo();
                     $obj->setear(
-                    $row['cetdescripcion'],
-                    $row['cetdetalle']);
-                    array_push($arreglo,$obj);
-                }
+                        $row['idcompraestadotipo'],
+                        $row['cetdescripcion'],
+                        $row['cetdetalle']);
+                        array_push($arreglo,$obj);
+                    }
             $salida = $arreglo;
             }else{
                 $bd->getError();
