@@ -1,95 +1,109 @@
 <?php
-include_once '../configuracion.php'; // Ajusta la ruta si es necesario
+include_once '../configuracion.php'; // Asegúrate de que esta ruta sea correcta
 
 // 🔹 Crear instancia del ABM
 $abm = new ABMCompraEstado();
 
 // 🔸 1. Prueba de Alta (insertar nuevo registro)
 echo "<h3>🔸 Prueba de alta()</h3>";
-$datosAlta = [
-    'idcompra' => 101, // ID de una compra existente (asegúrate de que exista)
-    'idcompraestadotipo' => 1, // ID de un tipo de estado de compra existente (ej. 'iniciada')
-    'cefechaini' => date('Y-m-d H:i:s'), // Fecha de inicio actual
-    'cefechafin' => null // Sin fecha de fin por ahora
+// Datos para un nuevo registro de CompraEstado
+// Asegúrate de que el idcompra y idcompraestadotipo existen en sus respectivas tablas
+$datosNuevo = [
+    'idcompra' => 6, // ID de una compra existente
+    'idcompraestadotipo' => 3, // ID de un tipo de estado de compra existente (ej. 'iniciada')
+    'cefechaini' => null,//date('Y-m-d H:i:s'), // O dejar null para que la DB ponga CURRENT_TIMESTAMP
+    'cefechafin' => null
 ];
 
-if ($abm->alta($datosAlta)) {
-    echo "✅ Alta realizada correctamente.<br>";
-    // Intentar buscar el último ID insertado (requiere que el método insertar lo retorne/guarde)
-    $ultimoIdInsertado = 0; // Debes implementar getLastInsertId en BaseDatos y que CompraEstado lo use.
-    // Por ahora, para pruebas, asumimos un ID
-    echo "ID asignado (aproximado si es AUTO_INCREMENT): " . $ababm->buscar(null)->getIdCompraEstado()."<br>"; // Este es un placeholder
-    // Mejor si el método alta de ABM te devuelve el objeto completo o su ID.
-    // Por ahora, asumiremos que si se hace el alta, podemos buscar uno que debería existir.
-    
-    // Para el test, vamos a buscar el último creado si lo necesitamos en baja/modificar
-    $listadoAux = $abm->listar("idcompra = 101 ORDER BY idcompraestado DESC LIMIT 1");
-    $idRecienCreado = count($listadoAux) > 0 ? $listadoAux[0]->getIdCompraEstado() : null;
+$idRecienCreado = null; // Para almacenar el ID del registro que creamos
 
+if ($abm->alta($datosNuevo)) {
+    echo "✅ Alta de CompraEstado realizada correctamente.<br>";
+    // Intentar encontrar el ID del registro recién creado
+    // Esto es un poco rudimentario; lo ideal sería que ABM->alta() devuelva el objeto o su ID.
+    // Buscamos el último registro con los mismos idcompra e idcompraestadotipo.
+    $listadoAux = $abm->listar("idcompra = {$datosNuevo['idcompra']} AND idcompraestadotipo = {$datosNuevo['idcompraestadotipo']} ORDER BY idcompraestado DESC LIMIT 1");
+    if (!empty($listadoAux)) {
+        $idRecienCreado = $listadoAux[0]->getIdCompraEstado();
+        echo "   ID del CompraEstado recién creado: {$idRecienCreado}.<br>";
+    } else {
+        echo "   ⚠️ No se pudo recuperar el ID del registro recién creado.<br>";
+    }
 } else {
-    echo "❌ Error al realizar el alta: " . $abm->getMensajeError() . "<br>";
-    $idRecienCreado = null;
+    echo "❌ Error al realizar el alta de CompraEstado: " . $abm->getMensajeError() . "<br>";
 }
 
 // 🔸 2. Prueba de Listar todos
 echo "<h3>🔸 Prueba de listar()</h3>";
 $listado = $abm->listar();
 if (!empty($listado)) {
-    echo "✅ Listado obtenido:<br>";
+    echo "✅ Listado de CompraEstado obtenido:<br>";
     foreach ($listado as $obj) {
-        echo "🧾 ID: {$obj->getIdCompraEstado()} - Compra: {$obj->getIdCompra()} - Tipo: {$obj->getIdCompraEstadoTipo()} - Ini: {$obj->getFechaIni()} - Fin: " . ($obj->getFechaFin() ?? 'N/A') . "<br>";
+        echo "🧾 ID: {$obj->getIdCompraEstado()} - Compra: {$obj->getIdCompra()} - Tipo: {$obj->getIdCompraEstadoTipo()} - Fecha Ini: {$obj->getFechaIni()} - Fecha Fin: " . ($obj->getFechaFin() ?? 'N/A') . "<br>";
     }
 } else {
-    echo "❌ No se pudo obtener listado o está vacío: " . $abm->getMensajeError() . "<br>";
+    echo "❌ No se pudo obtener listado de CompraEstado: " . $abm->getMensajeError() . "<br>";
 }
 
-// Si no se creó nada, las siguientes pruebas no tienen sentido
-if ($idRecienCreado === null) {
-    echo "⚠️ No se pudo obtener el ID del registro creado. Saltando pruebas de buscar, modificar y baja.<br>";
-} else {
-    echo "<h4>ID del registro recién creado para pruebas subsiguientes: {$idRecienCreado}</h4>";
-
-    // 🔸 3. Prueba de Buscar por ID
-    echo "<h3>🔸 Prueba de buscar({$idRecienCreado})</h3>";
-    $buscado = $abm->buscar($idRecienCreado);
+// 🔸 3. Prueba de Buscar por ID
+echo "<h3>🔸 Prueba de buscar()</h3>";
+// Usamos el ID del registro recién creado para esta prueba
+$idBuscar = 18; 
+if ($idBuscar !== null) {
+    $buscado = $abm->buscar($idBuscar);
     if ($buscado) {
-        echo "✅ Registro encontrado:<br>";
-        echo "  ID: {$buscado->getIdCompraEstado()} - Compra: {$buscado->getIdCompra()} - Tipo: {$buscado->getIdCompraEstadoTipo()} - Ini: {$buscado->getFechaIni()} - Fin: " . ($buscado->getFechaFin() ?? 'N/A') . "<br>";
+        echo "✅ CompraEstado encontrado con ID {$idBuscar}:<br>";
+        echo "   ID: {$buscado->getIdCompraEstado()} - Compra: {$buscado->getIdCompra()} - Tipo: {$buscado->getIdCompraEstadoTipo()} - Fecha Ini: {$buscado->getFechaIni()} - Fecha Fin: " . ($buscado->getFechaFin() ?? 'N/A') . "<br>";
     } else {
-        echo "❌ No se encontró el registro con ID {$idRecienCreado}: " . $abm->getMensajeError() . "<br>";
+        echo "❌ No se encontró el CompraEstado con ID {$idBuscar}: " . $abm->getMensajeError() . "<br>";
     }
+} else {
+    echo "⚠️ No se pudo realizar la prueba de buscar porque no se obtuvo un ID de alta.<br>";
+}
 
-    // 🔸 4. Prueba de Modificar
-    echo "<h3>🔸 Prueba de modificar({$idRecienCreado})</h3>";
+
+// 🔸 4. Prueba de Modificar
+echo "<h3>🔸 Prueba de modificar()</h3>";
+// Modificamos el registro recién creado
+$idModificar = 11;
+if ($idModificar !== null) {
     $datosModificar = [
-        'idcompraestado' => $idRecienCreado, // ID del registro a modificar
-        'idcompraestadotipo' => 2, // Nuevo tipo de estado (ej. 'procesando')
-        'cefechafin' => date('Y-m-d H:i:s') // Establecer fecha de fin
+        'idcompraestadotipo' => 3, // Cambiamos a otro tipo de estado (ej. 'en proceso')
+        'idcompra' => 6 // Establecemos una fecha de fin
     ];
-    if ($abm->modificar($datosModificar)) {
-        echo "✅ Modificación exitosa del ID {$idRecienCreado}.<br>";
-        // Verificar la modificación
-        $verificar = $abm->buscar($idRecienCreado);
+    if ($abm->modificar($datosModificar,10)) {
+        echo "✅ Modificación exitosa del CompraEstado con ID {$idModificar}.<br>";
+        // Verificamos que se haya modificado
+        $verificar = $abm->buscar($idModificar);
         if ($verificar) {
-            echo "  Verificación: Tipo: {$verificar->getIdCompraEstadoTipo()} - Fin: {$verificar->getFechaFin()}<br>";
+            echo "   Verificación: Nuevo Tipo: {$verificar->getIdCompraEstadoTipo()} - Nueva Fecha Fin: {$verificar->getFechaFin()}<br>";
         }
     } else {
-        echo "❌ Error al modificar ID {$idRecienCreado}: " . $abm->getMensajeError() . "<br>";
+        echo "❌ Error al modificar el CompraEstado con ID {$idModificar}: " . $abm->getMensajeError() . "<br>";
     }
+} else {
+    echo "⚠️ No se pudo realizar la prueba de modificar porque no se obtuvo un ID de alta.<br>";
+}
 
-    // 🔸 5. Prueba de Baja (eliminar)
-    echo "<h3>🔸 Prueba de baja({$idRecienCreado})</h3>";
-    if ($abm->baja($idRecienCreado)) {
-        echo "✅ Registro con ID {$idRecienCreado} eliminado correctamente.<br>";
-        // Intentar buscar para confirmar eliminación
-        $confirmarEliminacion = $abm->buscar($idRecienCreado);
+
+// 🔸 5. Prueba de Baja (eliminar)
+echo "<h3>🔸 Prueba de baja()</h3>";
+// Eliminamos el registro recién creado
+$idEliminar = 12;
+if ($idEliminar !== null) {
+    if ($abm->baja($idEliminar)) {
+        echo "✅ CompraEstado con ID {$idEliminar} eliminado correctamente.<br>";
+        // Intentar buscar para confirmar que fue eliminado
+        $confirmarEliminacion = $abm->buscar($idEliminar);
         if ($confirmarEliminacion === null) {
-            echo "  Confirmación: El registro ya no existe.<br>";
+            echo "   Confirmación: El registro ya no existe.<br>";
         } else {
-            echo "  ⚠️ Confirmación: El registro AÚN existe después de intentar eliminar.<br>";
+            echo "   ⚠️ Confirmación: El registro AÚN existe después de intentar eliminar.<br>";
         }
     } else {
-        echo "❌ Error al eliminar ID {$idRecienCreado}: " . $abm->getMensajeError() . "<br>";
+        echo "❌ Error al eliminar el CompraEstado con ID {$idEliminar}: " . $abm->getMensajeError() . "<br>";
     }
+} else {
+    echo "⚠️ No se pudo realizar la prueba de baja porque no se obtuvo un ID de alta.<br>";
 }
 ?>

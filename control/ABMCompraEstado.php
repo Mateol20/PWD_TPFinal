@@ -21,11 +21,9 @@ class ABMCompraEstado{
         return $obj;
     }
 
-    public function alta($idCompra,$idCompraEstadoTipo){
+    public function alta($array){
         $salida = false;
-        $obj = new CompraEstado;
-        $obj -> setIdCompra($idCompra);
-        $obj -> setIdCompra($idCompraEstadoTipo);
+        $obj = $this->cargarObj($array);
         if($obj->insertar()){
            $salida = true; 
         }else{

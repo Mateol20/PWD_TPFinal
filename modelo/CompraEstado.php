@@ -65,17 +65,16 @@ class CompraEstado{
         $this->fechaFin = $fechaFin;
         return $this;
     }
-    public function setear($idCompra,$idCompraEstadoTipo,$fechaI,$fechaF){
+    public function setear($idCompra,$idCompraEstadoTipo){
         $this->setIdCompra($idCompra);
         $this->setIdCompraEstadoTipo($idCompraEstadoTipo);
-        $this->setFechaIni($fechaI);
-        $this->setFechaFin($fechaF);
+
     }
     public function insertar(){
         $salida = false;
         $bd = new BaseDatos;
         $sql = "INSERT INTO compraestado (idcompra,idcompraestadotipo,cefechaini,cefechafin) VALUES
-        ('" . $this->getIdCompra() . "','" . $this->getIdCompraEstado() . "','" . $this->getFechaIni() . "','" . $this->getFechaFin() . ")'";
+        ('" . $this->getIdCompra() . "','" . $this->getIdCompraEstadoTipo() . "','" . date('Y-m-d H:i:s') . "','" . NULL . "')";
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;
@@ -127,11 +126,11 @@ class CompraEstado{
             if($bd->Ejecutar($sql)){
                 $linea = $bd->Registro();
                 $obj = new CompraEstado;
-                $obj->setear(
-                $linea['idcompra'],
-                $linea['idcompraestado'],
-                $linea['fechaini'],
-                $linea['fechafin']);
+                $obj -> setIdCompraEstado($linea['idcompraestado']);
+                $obj -> setIdCompra($linea['idcompra']);
+                $obj -> setIdCompraEstadoTipo($linea['idcompraestado']);
+                $obj -> setFechaIni($linea['cefechaini']);
+                $obj -> setFechaFin($linea['cefechafin']);
                 $salida = $obj;
             }else{
                 $bd->getError();
@@ -157,13 +156,13 @@ class CompraEstado{
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $arreglo = [];
-                $obj = new CompraEstado;
-                foreach($bd->Registro() as $row){
-                    $obj->setear(
-                    $row['idcompra'],
-                    $row['idcompraestado'],
-                    $row['fechaini'],
-                    $row['fechafin']);
+                while($linea = $bd->Registro()){
+                    $obj = new CompraEstado;
+                $obj -> setIdCompra($linea['idcompraestado']);
+                $obj -> setIdCompra($linea['idcompra']);
+                $obj -> setIdCompraEstadoTipo($linea['idcompraestado']);
+                $obj -> setFechaIni($linea['cefechaini']);
+                $obj -> setFechaFin($linea['cefechafin']);
                     array_push($arreglo,$obj);
                 }
             $salida = $arreglo;
