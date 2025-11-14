@@ -90,7 +90,8 @@ class CompraEstado{
         $salida = false;
         $bd = new BaseDatos;
         $sql = "UPDATE compraestado SET 
-        (idcompraestadotipo = '" . $this->getIdCompraEstadoTipo() . "', fechacefin ='". date('Y-m-d H:i:s') . "' WHERE idcompraestado ='" . $this->getIdCompraEstado() . "')";
+        idcompraestadotipo = '" . $this->getIdCompraEstadoTipo() . "' , cefechafin = '". date('Y-m-d H:i:s') .
+        "' WHERE idcompraestado = '" . $this->getIdCompraEstado() . "'";
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;
@@ -119,6 +120,7 @@ class CompraEstado{
     }
 
     public function obtenerPorId(){
+         $salida = false;
         $bd = new BaseDatos;
         $sql = "SELECT * FROM compraestado WHERE idcompraestado =" . $this->getIdCompraEstado();
         if($bd->Iniciar()){

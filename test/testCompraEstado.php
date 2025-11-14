@@ -66,11 +66,11 @@ if ($idBuscar !== null) {
 // 🔸 4. Prueba de Modificar
 echo "<h3>🔸 Prueba de modificar()</h3>";
 // Modificamos el registro recién creado
-$idModificar = 11;
+$idModificar = 2;
 if ($idModificar !== null) {
     $datosModificar = [
         'idcompraestadotipo' => 3, // Cambiamos a otro tipo de estado (ej. 'en proceso')
-        'idcompraestado' => 1 // Establecemos una fecha de fin
+        'idcompraestado' => 2 // Establecemos una fecha de fin
     ];
     if ($abm->modificar($datosModificar)) {
         echo "✅ Modificación exitosa del CompraEstado con ID {$idModificar}.<br>";
@@ -90,7 +90,7 @@ if ($idModificar !== null) {
 // 🔸 5. Prueba de Baja (eliminar)
 echo "<h3>🔸 Prueba de baja()</h3>";
 // Eliminamos el registro recién creado
-$idEliminar = 12;
+$idEliminar = 20;
 if ($idEliminar !== null) {
     if ($abm->baja($idEliminar)) {
         echo "✅ CompraEstado con ID {$idEliminar} eliminado correctamente.<br>";
@@ -107,4 +107,11 @@ if ($idEliminar !== null) {
 } else {
     echo "⚠️ No se pudo realizar la prueba de baja porque no se obtuvo un ID de alta.<br>";
 }
+
+        // $confirmarEliminacion = $abm->buscar(13);
+        // if ($confirmarEliminacion === false) {
+        //     echo "   Confirmación: El registro ya no existe.<br>";
+        // } else {
+        //     echo "   ⚠️ Confirmación: El registro AÚN existe después de intentar eliminar.<br>";
+        // }
 ?>
