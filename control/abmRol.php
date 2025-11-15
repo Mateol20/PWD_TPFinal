@@ -1,8 +1,8 @@
 <?php
+
+
 class AbmRol
 {
-    //Espera como parametro un arreglo asociativo donde las claves coinciden con las variables instancias del objeto
-
     /**
      * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto
      * @param array $param
@@ -17,7 +17,9 @@ class AbmRol
         ) {
             $obj = new Rol();
 
-            $obj->cargar(null, $param["roldescripcion"]);
+            // Asumo que tu modelo Rol tiene un constructor o método cargar($id, $descripcion)
+            $idrol = $param["id"] ?? null;
+            $obj->cargar($idrol, $param["roldescripcion"]);
         }
         return $obj;
     }
@@ -44,7 +46,6 @@ class AbmRol
      * @param array $param
      * @return boolean
      */
-
     private function seteadosCamposClaves($param)
     {
         $resp = false;
@@ -70,6 +71,7 @@ class AbmRol
 
         return $resp;
     }
+
     /**
      * Permite eliminar un objeto
      * @param array $param
@@ -98,7 +100,7 @@ class AbmRol
         $resp = false;
         if ($this->seteadosCamposClaves($param)) {
             $elObjtTabla = $this->cargarObjeto($param);
-            $elObjtTabla->setId($param["id"]);
+            $elObjtTabla->setIdRol($param["id"]);
             if ($elObjtTabla != null and $elObjtTabla->modificar()) {
                 $resp = true;
             }
@@ -128,7 +130,7 @@ class AbmRol
 
         $obj = new Rol();
         $arreglo = $obj->listar($where);
-        return $arreglo;
+        return $arreglo ?? [];
     }
 
     // /**
@@ -138,37 +140,17 @@ class AbmRol
     //  */
     // public function darPermiso($param)
     // {
-    //     $resp = false;
-
-    //     if ($this->seteadosCamposClaves($param) && isset($param["idmenu"])) {
-    //         $objMenuRol = new MenuRol();
-    //         $objMenuRol->cargarClaves($param["id"], $param["idmenu"]);
-    //         if ($objMenuRol->insertar()) {
-    //             $resp = true;
-    //         }
-    //     }
-
-    //     return $resp;
+    //     // ... lógica darPermiso ...
     // }
 
-    /**
-     * Da el permiso a un rol a acceder a una página
-     * @param array
-     * @return boolean
-     */
+    // /**
+    //  * Quita el permiso a un rol a acceder a una página
+    //  * @param array
+    //  * @return boolean
+    //  */
     // public function quitarPermiso($param)
     // {
-    //     $resp = false;
-
-    //     if ($this->seteadosCamposClaves($param) && isset($param["idmenu"])) {
-    //         $objMenuRol = new MenuRol();
-    //         $objMenuRol->cargarClaves($param["id"], $param["idmenu"]);
-    //         if ($objMenuRol->eliminar()) {
-    //             $resp = true;
-    //         }
-    //     }
-
-    //     return $resp;
+    //     // ... lógica quitarPermiso ...
     // }
 
     /**
@@ -193,6 +175,6 @@ class AbmRol
 
         $obj = new MenuRol();
         $arreglo = $obj->listar($where);
-        return $arreglo;
+        return $arreglo ?? [];
     }
 }

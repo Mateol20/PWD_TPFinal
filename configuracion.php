@@ -9,17 +9,22 @@ header("Cache-Control: no-cache, must-revalidate ");
 
 $PROYECTO = 'PWD_TPFINAL';
 
-//variable que almacena el directorio del proyecto
+// Definición de la constante URL_ROOT (SOLUCIÓN)
+define('URL_ROOT', "http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/");
+
+//variable que almacena el directorio del proyecto (Ruta Absoluta del Sistema de Archivos)
 $ROOT = $_SERVER['DOCUMENT_ROOT'] . "/" . $PROYECTO . "/";
 
-include_once($ROOT . 'util/autoloader.php');
+include_once($ROOT . 'util/funciones.php');
 
 
 // Variable que define la pagina de autenticacion del proyecto
-$INICIO = "Location:http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/vista/login/login.php";
+// Ahora usa la constante URL_ROOT
+$INICIO = "Location:" . URL_ROOT . "vista/login/login.php";
 
 // variable que define la pagina principal del proyecto (menu principal)
-$PRINCIPAL = "Location:http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/principal.php";
+// Ahora usa la constante URL_ROOT
+$PRINCIPAL = "Location:" . URL_ROOT . "principal.php";
 
 
 $_SESSION['ROOT'] = $ROOT;

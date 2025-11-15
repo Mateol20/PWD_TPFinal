@@ -1,6 +1,7 @@
 <?php
-class abmCompraItem{
-        private $mensajeError;
+class abmCompraItem
+{
+    private $mensajeError;
 
     public function __construct()
     {
@@ -11,7 +12,8 @@ class abmCompraItem{
     {
         return $this->mensajeError;
     }
-    public function cargarObj($compra){
+    public function cargarObj($compra)
+    {
         $objCompra = new CompraItem;
         $objCompra->setIdProducto($compra['idproducto']);
         $objCompra->setIdcompra($compra['idcompra']);
@@ -19,58 +21,63 @@ class abmCompraItem{
         return $objCompra;
     }
 
-    public function alta($array){
+    public function alta($array)
+    {
         $obj = $this->cargarObj($array);
-                if($obj->insertar()){
-           $salida = true; 
-        }else{
+        if ($obj->insertar()) {
+            $salida = true;
+        } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function modificar($array, $idCompraItem){
+    public function modificar($array, $idCompraItem)
+    {
         $salida = false;
         $obj = $this->cargarObj($array);
-        $obj ->setidCompraItem($idCompraItem);
-        if($obj->modificar()){
-           $salida = true; 
-        }else{
+        $obj->setidCompraItem($idCompraItem);
+        if ($obj->modificar()) {
+            $salida = true;
+        } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function baja($id){
+    public function baja($id)
+    {
         $salida = false;
         $obj = new CompraItem;
-        $obj -> setIdCompraItem($id);
-        if($obj->eliminar()){
-           $salida = true; 
-        }else{
+        $obj->setIdCompraItem($id);
+        if ($obj->eliminar()) {
+            $salida = true;
+        } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function buscar($id){
+    public function buscar($id)
+    {
         $salida = false;
         $obj = new CompraItem;
-        $obj -> setIdCompraitem($id);
-        if($resultado = $obj->obtenerPorId()){
-           $salida = $resultado; 
-        }else{
+        $obj->setIdCompraitem($id);
+        if ($resultado = $obj->obtenerPorId()) {
+            $salida = $resultado;
+        } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function listar(){
+    public function listar()
+    {
         $salida = false;
         $obj = new CompraItem;
-        if($lista = $obj->listar()){
-           $salida = $lista; 
-        }else{
+        if ($lista = $obj->listar()) {
+            $salida = $lista;
+        } else {
             $this->getMensajeError();
         }
         return $salida;

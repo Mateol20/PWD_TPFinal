@@ -205,10 +205,10 @@ class Menu
                     array_push($arregloMenu, $menu);
                 }
             } else {
-           $this->setMensajeError("menu->modificar: " . $bd->getError());
+                "menu->modificar: " . $bd->getError();
             }
         } else {
-            $this->setMensajeError("menu->modificar: " . $bd->getError());
+            "menu->modificar: " . $bd->getError();
         }
 
         return $arregloMenu;

@@ -104,7 +104,7 @@ class Rol
                 $arreglo = [];
                 while ($fila = $bd->Registro()) {
                     $objRol = new Rol();
-                    $objRol->cargar($fila["idrol"], $fila["roldescripcion"]);
+                    $objRol->cargar($fila["idrol"], $fila["rodescripcion"]);
                     array_push($arreglo, $objRol);
                 }
             } else {

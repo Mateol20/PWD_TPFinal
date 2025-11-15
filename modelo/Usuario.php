@@ -1,4 +1,7 @@
 <?php
+// Clase BaseDatos (asumo que existe en algún lugar, por ejemplo, /Modelo/BaseDatos.php)
+// require_once 'BaseDatos.php'; 
+
 class Usuario
 {
 
@@ -11,11 +14,17 @@ class Usuario
 
     public function __construct()
     {
-        $usNombre = '';
-        $usPass = '';
-        $usEmail = '';
-        $usDeshabilitado = null;
-        $mensajeError = "";
+        $this->idUsuario = null;
+        $this->usNombre = '';
+        $this->usPass = '';
+        $this->usEmail = '';
+        $this->usDeshabilitado = null;
+        $this->mensajeError = "";
+    }
+
+    public function getMensajeError()
+    {
+        return $this->mensajeError;
     }
 
     public function getId()
@@ -32,7 +41,6 @@ class Usuario
     }
     public function getEmail()
     {
-
         return $this->usEmail;
     }
     public function getDeshabilitado()
@@ -64,27 +72,43 @@ class Usuario
     {
         $this->mensajeError = $mensaje;
     }
-    public function setear($nombre, $pass, $email)
+
+    /**
+     * Carga el objeto Usuario con todos sus atributos.
+     * La firma fue corregida para aceptar los 5 parámetros, con el ID y deshabilitado opcionales.
+     * * @param int|null $id
+     * @param string $nombre
+     * @param string $pass
+     * @param string $email
+     * @param string|null $deshabilitado
+     */
+    public function cargar($id = null, $nombre = null, $pass = null, $email = null, $deshabilitado = null)
     {
+        $this->setId($id);
         $this->setNombre($nombre);
         $this->setPass($pass);
         $this->setEmail($email);
+        $this->setDeshabilitado($deshabilitado);
     }
 
-    public function insert()
+    public function insertar()
     {
         $db = new BaseDatos;
         $salida = false;
+        // La columna usdeshabilitado es NULL por defecto, no es necesario incluirla aquí.
+        // Asumiendo que BaseDatos.php maneja las inyecciones SQL de forma segura
         $sql = "INSERT INTO usuario (usnombre, uspass, usmail)
-        VALUES('" . $this->getNombre() .  "','" . $this->getPass() . "', '" .  $this->getEmail() . "') ";
+        VALUES('" . $this->getNombre() . "', '" . $this->getPass() . "', '" . $this->getEmail() . "')";
+
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
+                // Si el ID se autoincrementa en la DB, puedes usar una función como $db->getLastInsertId() aquí
             } else {
-            $this->setMensajeError("Usuario->insertar: ". $db->getError()); $db->getError();
+                $this->setMensajeError("Usuario->insertar: " . $db->getError());
             }
         } else {
-           $this->setMensajeError("Usuario->insertar: ". $db->getError());
+            $this->setMensajeError("Usuario->insertar: " . $db->getError());
         }
         return $salida;
     }
@@ -93,43 +117,48 @@ class Usuario
     {
         $bd = new BaseDatos;
         $respuesta = false;
+        // Se corrige la sentencia SQL removiendo el punto y coma final (;) y agregando el campo usdeshabilitado.
         $sql = "UPDATE Usuario SET 
             usnombre = '" . $this->getNombre() . "',
             uspass = '" . $this->getPass() . "',
-            usmail = '" . $this->getEmail() . "' 
-            WHERE idusuario = '" . $this->getId() . ";'";
+            usmail = '" . $this->getEmail() . "',
+            usdeshabilitado = " . ($this->getDeshabilitado() === null ? 'NULL' : "'" . $this->getDeshabilitado() . "'") . " 
+            WHERE idusuario = '" . $this->getId() . "'";
 
-                if ($bd->Iniciar()) {
+        if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 $respuesta = true;
             } else {
-                $this->setMensajeError("rol->modificar: " . $bd->getError());
+                $this->setMensajeError("Usuario->modificar: " . $bd->getError());
             }
         } else {
-            $this->setMensajeError("rol->modificar: " . $bd->getError());
+            $this->setMensajeError("Usuario->modificar: " . $bd->getError());
         }
         return $respuesta;
     }
 
-    public function eliminar($id)
+    // Se asume que el objeto ya tiene el ID cargado antes de llamar a eliminar
+    public function eliminar()
     {
         $salida = false;
-        $this->setId($id);
         $db = new BaseDatos;
         $sql = "DELETE FROM Usuario WHERE idusuario ='" . $this->getId() . "'";
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
-                echo 'nice';
+            } else {
+                $this->setMensajeError("Usuario->eliminar: " . $db->getError());
             }
+        } else {
+            $this->setMensajeError("Usuario->eliminar: " . $db->getError());
         }
         return $salida;
     }
-      /**
-     * Busca un rol por id
-     * Sus datos son colocados en el objeto
+
+    /**
+     * Busca un usuario por id y carga los 5 atributos.
      * @param string $id
-     * @return boolean true si encontro, false caso contrario
+     * @return boolean true si encontró, false caso contrario
      */
     public function buscar($id)
     {
@@ -140,11 +169,13 @@ class Usuario
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 if ($fila = $bd->Registro()) {
+                    // Carga con los 5 argumentos (incluyendo idusuario y usdeshabilitado)
                     $this->cargar(
                         $fila['idusuario'],
                         $fila['usnombre'],
                         $fila['uspass'],
-                        $fila['usmail']
+                        $fila['usmail'],
+                        $fila['usdeshabilitado'] // Dato faltante en tu versión original
                     );
 
                     $respuesta = true;
@@ -158,6 +189,7 @@ class Usuario
 
         return $respuesta;
     }
+
     public function listar($condicion = "")
     {
         $bd = new BaseDatos();
@@ -173,6 +205,7 @@ class Usuario
                 $arreglo = [];
                 while ($fila = $bd->Registro()) {
                     $objUsuario = new Usuario();
+                    // Esta llamada ahora es compatible con la nueva firma de cargar
                     $objUsuario->cargar(
                         $fila["idusuario"],
                         $fila["usnombre"],
