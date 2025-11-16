@@ -2,7 +2,7 @@
 
 use Respect\Validation\Validator as v;
 
-class AbmUsuario
+class ABMUsuario
 {
 
     /**

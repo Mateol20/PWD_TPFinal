@@ -1,5 +1,5 @@
 <?php
-class abmCompraItem
+class ABMCompraItem
 {
     private $mensajeError;
 

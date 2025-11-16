@@ -249,4 +249,19 @@ class BaseDatos extends PDO
     {
         // Llama al método lastInsertId() de la clase padre (PDO)
     }
+    /**
+     * Escapa la cadena para ser usada de forma segura en consultas SQL.
+     * Utiliza el método nativo PDO::quote(), que escapa y añade comillas simples.
+     * @param string $str La cadena a escapar.
+     * @return string La cadena escapada y entrecomillada.
+     */
+    public function escapeString($str)
+    {
+        // PDO::quote() escapa la cadena y le añade las comillas simples
+        // Ejemplo: "O'Malley" -> "'O\'Malley'"
+        if ($this->conec) {
+            return parent::quote($str);
+        }
+        return "'" . $str . "'"; // Fallback si no hay conexión
+    }
 }

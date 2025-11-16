@@ -6,7 +6,7 @@
 $nav = new ControlNav();
 
 // Obtener el ID del rol. Si el usuario no está logueado, se usa 0 (Invitado).
-$rolId = $rol ? $rol->getIdrol() : 0;
+$rolId = $rol ? $rol->getIdrol() : 12;
 
 // Obtiene los menús visibles para el rol actual
 $menus = $nav->getSubMenus($rolId);

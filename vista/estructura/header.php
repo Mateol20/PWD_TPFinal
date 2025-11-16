@@ -1,14 +1,10 @@
 <?php
 // Incluye la configuración general del proyecto
-include_once '../../configuracion.php';
+include_once __DIR__ . '/../../configuracion.php';
 
 // Inicializa la sesión y recupera el objeto Session
 $session = new Session();
 
-// Obtener el objeto Rol o un indicador de rol para la navegación
-// **SE ELIMINA:** $rol = $session->getRol();
-// **SE ELIMINA:** $usuario = $session->activa() ? $session->getUsuario() : null;
-// Estas variables serán obtenidas solo en navbar.php, dentro de la comprobación de activa().
 
 // Título de la página (usa el valor pasado o un predeterminado)
 $page_title = $page_title ?? "Mi Aplicación con Semantic UI";
