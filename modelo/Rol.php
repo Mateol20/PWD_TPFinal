@@ -1,195 +1,191 @@
 <?php
 class Rol
 {
-    private $id;
-    private $rolDescripcion;
-    private $mensajeOperacion;
+    private $idrol;
+    private $rodescripcion;
+    private $mensajeoperacion;
 
     public function __construct()
     {
-        $this->id = null;
-        $this->rolDescripcion = null;
-        $this->mensajeOperacion = null;
+        $this->idrol = null;
+        $this->rodescripcion = "";
+        $this->mensajeoperacion = "";
     }
 
-    /////////////////////////////
-    // SET Y GET //
-    /////////////////////////////
-
-    public function getId()
+    /**
+     * Carga los datos del rol.
+     * @param int|null $id
+     * @param string $desc
+     */
+    public function cargar($id, $desc)
     {
-        return $this->id;
+        $this->idrol = $id;
+        $this->rodescripcion = $desc;
     }
+
+    // --- Getters ---
+
+    public function getIdRol()
+    {
+        return $this->idrol;
+    }
+
+    public function getDescripcion()
+    {
+        return $this->rodescripcion;
+    }
+
+    public function getMensajeError()
+    {
+        return $this->mensajeoperacion;
+    }
+
+    // --- Setters ---
+
     public function setIdRol($id)
     {
-        $this->id = $id;
+        $this->idrol = $id;
     }
-    public function getRolDescripcion()
+
+    public function setDescripcion($desc)
     {
-        return $this->rolDescripcion;
+        $this->rodescripcion = $desc;
     }
-    public function setRolDescripcion($rolDescripcion)
+
+    public function setMensajeError($msg)
     {
-        $this->rolDescripcion = $rolDescripcion;
+        $this->mensajeoperacion = $msg;
     }
-    public function getMensajeOperacion()
-    {
-        return $this->mensajeOperacion;
-    }
-    public function setMensajeOperacion($mensajeOperacion)
-    {
-        $this->mensajeOperacion = $mensajeOperacion;
-    }
+
+    // --- Metodos DB ---
+
     /**
-     * Carga datos al objeto
+     * Busca un rol por su ID.
      * @param int $id
-     * @param string $rolDescripcion
-     */
-    public function cargar($id, $rolDescripcion)
-    {
-        $this->setIdRol($id);
-        $this->setRolDescripcion($rolDescripcion);
-    }
-
-
-    /**
-     * Busca un rol por id
-     * Sus datos son colocados en el objeto
-     * @param string $id
-     * @return boolean true si encontro, false caso contrario
+     * @return boolean
      */
     public function buscar($id)
     {
-        $bd = new BaseDatos();
-        $respuesta = false;
-        $sql = "SELECT * FROM rol WHERE idrol = '" . $id . "'";
+        $base = new BaseDatos();
+        $resp = false;
+        $sql = "SELECT * FROM rol WHERE idrol = " . $id;
 
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                if ($fila = $bd->Registro()) {
-                    $this->cargar(
-                        $id,
-                        $fila["roldescripcion"]
-                    );
-
-                    $respuesta = true;
+        if ($base->Iniciar()) {
+            if ($base->Ejecutar($sql)) {
+                if ($row = $base->Registro()) {
+                    $this->cargar($row['idrol'], $row['rodescripcion']);
+                    $resp = true;
                 }
             } else {
-                $this->setMensajeOperacion("rol->buscar: " . $bd->getError());
+                $this->setMensajeError("Rol->buscar: " . $base->getError());
             }
         } else {
-            $this->setMensajeOperacion("rol->buscar: " . $bd->getError());
+            $this->setMensajeError("Rol->buscar: " . $base->getError());
         }
-
-        return $respuesta;
+        return $resp;
     }
 
     /**
-     * Lista roles de la base de datos
-     * @param string $condicion (opcional)
-     * @return array|null colección de usuarios o null si no hay ninguno
+     * Lista roles basados en una condición WHERE.
+     * @param string $condicion
+     * @return array
      */
-    public function listar($condicion = "")
+    public static function listar($condicion = "")
     {
-        $bd = new BaseDatos();
-        $arreglo = null;
-        $sql = "SELECT * FROM rol";
-
+        $arreglo = array();
+        $base = new BaseDatos();
+        $sql = "SELECT * FROM rol ";
         if ($condicion != "") {
-            $sql .= " WHERE " . $condicion;
+            $sql .= ' WHERE ' . $condicion;
         }
-
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $arreglo = [];
-                while ($fila = $bd->Registro()) {
-                    $objRol = new Rol();
-                    $objRol->cargar($fila["idrol"], $fila["roldescripcion"]);
-                    array_push($arreglo, $objRol);
+        $res = $base->Ejecutar($sql);
+        if ($res > -1) {
+            if ($res > 0) {
+                while ($row = $base->Registro()) {
+                    $obj = new Rol();
+                    $obj->cargar($row['idrol'], $row['rodescripcion']);
+                    array_push($arreglo, $obj);
                 }
-            } else {
-                $this->setMensajeOperacion("rol->listar: " . $bd->getError());
             }
         } else {
-            $this->setMensajeOperacion("rol->listar: " . $bd->getError());
+            "Rol->listar: " . $base->getError();
         }
 
         return $arreglo;
     }
 
     /**
-     * Inserta los datos del objeto Usuario actual a la base de datos.
-     * @return boolean true si se concretó, false caso contrario
+     * Inserta un nuevo rol en la base de datos.
+     * @return boolean
      */
     public function insertar()
     {
-        $bd = new BaseDatos();
-        $resp = null;
-        $resultado = false;
+        $base = new BaseDatos();
+        $resp = false;
 
-        $sql = "INSERT INTO rol(roldescripcion)
-        VALUES ('" . $this->getRolDescripcion() . "');";
+        $desc = $base->escapeString($this->getDescripcion());
 
-        if ($bd->Iniciar()) {
-            $resp = $bd->Ejecutar($sql);
-            if ($resp) {
-                $this->setIdRol($resp);
-                $resultado = true;
+        // El ID es AUTO_INCREMENT, se asigna 'null' para que la DB lo genere
+        $sql = "INSERT INTO rol (idrol, rodescripcion) VALUES (NULL, " . $desc . ")";
+
+        if ($base->Iniciar()) {
+            if ($id = $base->Ejecutar($sql)) {
+                $this->setIdRol($id);
+                $resp = true;
             } else {
-                $this->setmensajeoperacion("rol->insertar: " . $bd->getError());
+                $this->setMensajeError("Rol->insertar: " . $base->getError());
             }
         } else {
-            $this->setMensajeOperacion("rol->insertar: " . $bd->getError());
+            $this->setMensajeError("Rol->insertar: " . $base->getError());
         }
-
-        return $resultado;
+        return $resp;
     }
 
     /**
-     * Modifica los datos de la usuario, colocando los del objeto actual
-     * @return boolean true si se concretó, false caso contrario
+     * Modifica el rol actual en la base de datos.
+     * @return boolean
      */
     public function modificar()
     {
-        $bd = new BaseDatos();
-        $respuesta = false;
+        $base = new BaseDatos();
+        $resp = false;
 
-        $sql = "UPDATE rol SET roldescripcion = '" . $this->getRolDescripcion() . "' WHERE idrol = '" . $this->getId() . "'";
+        $desc = $base->escapeString($this->getDescripcion());
 
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
+        $sql = "UPDATE rol SET rodescripcion = " . $desc . " WHERE idrol = " . $this->getIdRol();
+
+        if ($base->Iniciar()) {
+            if ($base->Ejecutar($sql)) {
+                $resp = true;
             } else {
-                $this->setMensajeOperacion("rol->modificar: " . $bd->getError());
+                $this->setMensajeError("Rol->modificar: " . $base->getError());
             }
         } else {
-            $this->setMensajeOperacion("rol->modificar: " . $bd->getError());
+            $this->setMensajeError("Rol->modificar: " . $base->getError());
         }
-
-        return $respuesta;
+        return $resp;
     }
 
     /**
-     * Elimina el objeto actual de la base de datos
-     * @return boolean true si se concretó, false caso contrario
+     * Elimina el rol actual de la base de datos.
+     * @return boolean
      */
     public function eliminar()
     {
-        $bd = new BaseDatos();
-        $respuesta = false;
+        $base = new BaseDatos();
+        $resp = false;
+        //  ON DELETE CASCADE en la base de datos.
+        $sql = "DELETE FROM rol WHERE idrol = " . $this->getIdRol();
 
-        $sql = "DELETE FROM rol WHERE idrol = '" . $this->getId() . "'";
-
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
+        if ($base->Iniciar()) {
+            if ($base->Ejecutar($sql)) {
+                $resp = true;
             } else {
-                $this->setMensajeOperacion("rol->eliminar: " . $bd->getError());
+                $this->setMensajeError("Rol->eliminar: " . $base->getError());
             }
         } else {
-            $this->setMensajeOperacion("rol->eliminar: " . $bd->getError());
+            $this->setMensajeError("Rol->eliminar: " . $base->getError());
         }
-
-        return $respuesta;
+        return $resp;
     }
 }
