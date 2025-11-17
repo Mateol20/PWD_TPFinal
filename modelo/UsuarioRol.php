@@ -1,66 +1,43 @@
 <?php
+// NOTA: Se asume que BaseDatos.php, Usuario.php y Rol.php están incluidos.
+
 class UsuarioRol
 {
-    private $idusuariorol;
-    private $objusuario;
-    private $objrol;
+    // SE ELIMINA $idusuariorol. La clave es compuesta (Usuario y Rol)
+    private $objUsuario; // Objeto Usuario
+    private $objRol;     // Objeto Rol
     private $mensajeoperacion;
 
     public function __construct()
     {
-        $this->idusuariorol = null;
-        $this->objusuario = new Usuario();
-        $this->objrol = new Rol();
+        $this->objUsuario = null;
+        $this->objRol = null;
         $this->mensajeoperacion = "";
     }
 
     /**
-     * Carga las claves foráneas (idrol e idusuario)
-     * @param int $idRol
-     * @param int $idUsuario
-     */
-    public function cargarClaves($idRol, $idUsuario)
-    {
-        $this->idusuariorol = null;
-
-        // Crea objetos temporales para buscar/referenciar
-        $rol = new Rol();
-        $rol->buscar($idRol);
-        $this->setObjRol($rol);
-
-        $usuario = new Usuario();
-        $usuario->buscar($idUsuario);
-        $this->setObjUsuario($usuario);
-    }
-
-    /**
-     * Carga el objeto completo con todos los atributos.
-     * @param int $idur
+     * Carga el objeto UsuarioRol con los objetos completos de Usuario y Rol.
      * @param Usuario $usuario
      * @param Rol $rol
      */
-    public function cargar($idur, $usuario, $rol)
+    public function setear($usuario, $rol)
     {
-        $this->idusuariorol = $idur;
-        $this->objusuario = $usuario;
-        $this->objrol = $rol;
+        $this->objUsuario = $usuario;
+        $this->objRol = $rol;
     }
 
     // --- Getters ---
 
-    public function getIdUsuarioRol()
-    {
-        return $this->idusuariorol;
-    }
+    // Ya no existe getIdUsuarioRol()
 
     public function getObjUsuario()
     {
-        return $this->objusuario;
+        return $this->objUsuario;
     }
 
     public function getObjRol()
     {
-        return $this->objrol;
+        return $this->objRol;
     }
 
     public function getMensajeError()
@@ -70,120 +47,89 @@ class UsuarioRol
 
     // --- Setters ---
 
-    public function setIdUsuarioRol($idur)
-    {
-        $this->idusuariorol = $idur;
-    }
-
-    public function setObjUsuario($usuario)
-    {
-        $this->objusuario = $usuario;
-    }
-
-    public function setObjRol($rol)
-    {
-        $this->objrol = $rol;
-    }
-
     public function setMensajeError($msg)
     {
         $this->mensajeoperacion = $msg;
     }
-
-    // --- Metodos DB ---
+    
+    // --- Métodos DB ---
 
     /**
-     * Busca un registro de relación por las claves foráneas.
-     * @param int $idRol
-     * @param int $idUsuario
+     * Busca la relación por sus dos claves (idusuario y idrol).
+     * @param array $param - Debe contener 'idusuario' y 'idrol'.
      * @return boolean
      */
-    public function buscarPorClaves($idRol, $idUsuario)
+    public function buscar($param)
     {
         $base = new BaseDatos();
         $resp = false;
-        $sql = "SELECT * FROM usuariorol WHERE idrol = " . $idRol . " AND idusuario = " . $idUsuario;
+
+        $idusuario = $param['idusuario'] ?? null;
+        $idrol = $param['idrol'] ?? null;
+
+        if ($idusuario === null || $idrol === null) {
+            $this->setMensajeError("UsuarioRol->buscar: Faltan IDs de usuario o rol.");
+            return false;
+        }
+
+        $sql = "SELECT * FROM usuariorol WHERE idusuario = " . $idusuario . " AND idrol = " . $idrol;
 
         if ($base->Iniciar()) {
             if ($base->Ejecutar($sql)) {
                 if ($row = $base->Registro()) {
-                    // Cargar el ID de la relación
-                    $this->setIdUsuarioRol($row['idusuariorol']);
-
-                    // Cargar los objetos de las claves foráneas
+                    // Carga los objetos Usuario y Rol completos
                     $objUsuario = new Usuario();
-                    $objUsuario->buscar($row['idusuario']);
-                    $this->setObjUsuario($objUsuario);
-
                     $objRol = new Rol();
-                    $objRol->buscar($row['idrol']);
-                    $this->setObjRol($objRol);
 
-                    $resp = true;
+                    if ($objUsuario->buscar($row['idusuario']) && $objRol->buscar($row['idrol'])) {
+                        // Llamada a setear con solo dos parámetros (sin idusuariorol)
+                        $this->setear($objUsuario, $objRol);
+                        $resp = true;
+                    } else {
+                        $this->setMensajeError("UsuarioRol->buscar: No se pudo cargar Usuario o Rol asociado.");
+                    }
                 }
             } else {
-                $this->setMensajeError("UsuarioRol->buscarPorClaves: " . $base->getError());
+                $this->setMensajeError("UsuarioRol->buscar: " . $base->getError());
             }
         } else {
-            $this->setMensajeError("UsuarioRol->buscarPorClaves: " . $base->getError());
+            $this->setMensajeError("UsuarioRol->buscar: " . $base->getError());
         }
         return $resp;
     }
 
-
     /**
-     * Lista las relaciones de usuario-rol basadas en una condición WHERE.
-     * @param string $condicion
-     * @return array
-     */
-    public static function listar($condicion = "")
-    {
-        $arreglo = array();
-        $base = new BaseDatos();
-        $sql = "SELECT * FROM usuariorol ";
-        if ($condicion != "") {
-            $sql .= ' WHERE ' . $condicion;
-        }
-        $res = $base->Ejecutar($sql);
-        if ($res > -1) {
-            if ($res > 0) {
-                while ($row = $base->Registro()) {
-                    $obj = new UsuarioRol();
-
-                    $objUsuario = new Usuario();
-                    $objUsuario->buscar($row['idusuario']);
-
-                    $objRol = new Rol();
-                    $objRol->buscar($row['idrol']);
-
-                    $obj->cargar($row['idusuariorol'], $objUsuario, $objRol);
-                    array_push($arreglo, $obj);
-                }
-            }
-        }
-        return $arreglo;
-    }
-
-    /**
-     * Inserta una nueva relación usuario-rol.
+     * Inserta la relación en la base de datos.
      * @return boolean
      */
     public function insertar()
     {
         $base = new BaseDatos();
         $resp = false;
-        $idUsuario = $this->getObjUsuario()->getId();
-        $idRol = $this->getObjRol()->getId();
-        // idusuariorol es NULL si es AUTO_INCREMENT
-        $sql = "INSERT INTO usuariorol (idusuariorol, idusuario, idrol) 
-                VALUES (NULL, " . $idUsuario . ", " . $idRol . ")";
+
+        if ($this->getObjUsuario() === null || $this->getObjRol() === null) {
+            $this->setMensajeError("UsuarioRol->insertar: No se han seteado los objetos Usuario o Rol.");
+            return false;
+        }
+
+        $idUsuario = $this->getObjUsuario()->getIdUsuario();
+        $idRol = $this->getObjRol()->getIdRol();
+
+        // No hay ID autoincremental
+        $sql = "INSERT INTO usuariorol (idusuario, idrol) VALUES (" . $idUsuario . ", " . $idRol . ")";
 
         if ($base->Iniciar()) {
-            if ($id = $base->Ejecutar($sql)) {
-                $this->setIdUsuarioRol($id);
+            // El Execute ahora devuelve true/false, no un ID
+            if ($base->Ejecutar($sql)) {
                 $resp = true;
             } else {
-                $this->setMensajeError("UsuarioRol->insertar: " . $base->getError());
+                // Manejar error de duplicado (clave primaria duplicada)
+                $error = $base->getError();
+                if (strpos($error, 'Duplicate entry') !== false) {
+                    $this->setMensajeError("UsuarioRol->insertar: La relación ya existe. " . $error);
+                } else {
+                    $this->setMensajeError("UsuarioRol->insertar: " . $error);
+                }
             }
         } else {
             $this->setMensajeError("UsuarioRol->insertar: " . $base->getError());
@@ -192,7 +138,7 @@ class UsuarioRol
     }
 
     /**
-     * Elimina una relación usuario-rol basada en las claves foráneas (idusuario e idrol).
+     * Elimina la relación de la base de datos usando la clave compuesta.
      * @return boolean
      */
     public function eliminar()
@@ -200,8 +146,8 @@ class UsuarioRol
         $base = new BaseDatos();
         $resp = false;
 
-        $idUsuario = $this->getObjUsuario()->getId();
-        $idRol = $this->getObjRol()->getId();
+        $idUsuario = $this->getObjUsuario()->getIdUsuario();
+        $idRol = $this->getObjRol()->getIdRol();
 
         $sql = "DELETE FROM usuariorol WHERE idusuario = " . $idUsuario . " AND idrol = " . $idRol;
 
@@ -215,5 +161,42 @@ class UsuarioRol
             $this->setMensajeError("UsuarioRol->eliminar: " . $base->getError());
         }
         return $resp;
+    }
+
+    /**
+     * Lista las relaciones de usuario y rol.
+     * @param string $condicion
+     * @return array de objetos UsuarioRol
+     */
+    public function listar($condicion = "")
+    {
+        $arreglo = array();
+        $base = new BaseDatos();
+        $sql = "SELECT * FROM usuariorol ";
+        if ($condicion != "") {
+            $sql .= ' WHERE ' . $condicion;
+        }
+
+        $res = $base->Ejecutar($sql);
+        if ($res > -1) {
+            if ($res > 0) {
+                while ($row = $base->Registro()) {
+                    $obj = new UsuarioRol();
+                    $objUsuario = new Usuario();
+                    $objRol = new Rol();
+
+                    // Se cargan los objetos Usuario y Rol completos
+                    if ($objUsuario->buscar($row['idusuario']) && $objRol->buscar($row['idrol'])) {
+                        // Se llama a setear con solo los dos objetos
+                        $obj->setear($objUsuario, $objRol);
+
+                        array_push($arreglo, $obj);
+                    }
+                }
+            }
+        } else {
+            $this->setMensajeError("UsuarioRol->listar: " . $base->getError());
+        }
+        return $arreglo;
     }
 }

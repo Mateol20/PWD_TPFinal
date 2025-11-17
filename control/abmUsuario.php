@@ -279,7 +279,7 @@ class ABMUsuario
 
             // 3. ASIGNACIÓN DE ROL POR DEFECTO (Asumo ID de Rol 2 = Cliente/Usuario Estándar)
             $paramRol = [
-                'id' => $objUsuarioRecienCreado->getId(),
+                'id' => $objUsuarioRecienCreado->getIdUsuario(),
                 'idrol' => 2
             ];
 
@@ -326,7 +326,7 @@ class ABMUsuario
             if (md5($claveIngresada) === $hashGuardado) {
 
                 // 3. Éxito: Obtener roles y Cargar la Sesión
-                $idUsuario = $usuarioEncontrado->getId();
+                $idUsuario = $usuarioEncontrado->getIdUsuario();
 
                 $rolesUsuario = $this->buscarRoles(['id' => $idUsuario]);
 
