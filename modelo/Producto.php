@@ -1,7 +1,7 @@
-<?php
-class Producto
-{
-    private $idProducto;
+<?php 
+class Producto{ 
+
+     private $idProducto;
     private $proNombre;
     private $proDetalle;
     private $proCantStock;
@@ -63,116 +63,54 @@ class Producto
         $this->setProDetalle($proDetalle);
         $this->setProCantStock($proCantStock);
     }
-    public function insertar()
-    {
-        $respuesta = false;
-        $bd = new BaseDatos();
-        $sql = "INSERT INTO producto (idproducto, pronombre, prodetalle, procantstock) 
-            VALUES ('{$this->getIdProducto()}', '{$this->getProNombre()}', 
-                    '{$this->getProDetalle()}', '{$this->getProCantStock()}')";
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
-            } else {
-                $this->setMensajeError("menu->insertar: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("menu->insertar: " . $bd->getError());
-        }
 
-        return $respuesta;
+public function insertar()
+{
+    $bd = new BaseDatos();
+    $sql = "INSERT INTO producto (pronombre, prodetalle, procantstock) 
+            VALUES ('{$this->getProNombre()}', '{$this->getProDetalle()}', '{$this->getProCantStock()}')";
+    
+    if ($bd->Iniciar() && $bd->Ejecutar($sql)) {
+        return true;
     }
-
-    public function eliminar()
-    {
-        $respuesta = false;
-        $bd = new BaseDatos();
-        $sql = "DELETE FROM producto WHERE idproducto = '{$this->getIdProducto()}'";
-
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
-            } else {
-                $this->setMensajeError("Producto->eliminar: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("Producto->eliminar: " . $bd->getError());
-        }
-
-        return $respuesta;
-    }
-
-    public function modificar()
-    {
-        $respuesta = false;
-        $bd = new BaseDatos();
-        $sql = "UPDATE producto SET 
-            pronombre = '" . $this->getProNombre() . "', 
-            prodetalle = '" . $this->getProDetalle() . "', 
-            procantstock = '" . $this->getProCantStock() . "', 
-        WHERE idproducto = '" . $this->getIdProducto() . "'";
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $respuesta = true;
-            } else {
-                $this->setMensajeError("menu->modificar: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("menu->modificar: " . $bd->getError());
-        }
-
-        return $respuesta;
-    }
-    public function buscar()
-    {
-        $respuesta = false;
-        $bd = new BaseDatos();
-        $sql = "SELECT * FROM producto WHERE idproducto = '" . $this->getIdProducto() . "'";
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                if ($registro = $bd->Registro()) {
-                    $this->setProNombre($registro['pronombre']);
-                    $this->setProDetalle($registro['prodetalle']);
-                    $this->setProCantStock($registro['procantstock']);
-                    $respuesta = true;
-                }
-            } else {
-                $this->setMensajeError("producto->obtenerPorId: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("producto->obtenerPorId: " . $bd->getError());
-        }
-        return $respuesta;
-    }
-    public static function listar($condicion = "")
-    {
-        $bd = new BaseDatos();
-        $sql = "SELECT * FROM menu ";
-
-        if ($condicion != "") {
-            $sql .= "WHERE " . $condicion;
-        }
-
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($sql)) {
-                $arreglo = [];
-                while ($fila = $bd->Registro()) {
-                    $objProducto = new Producto();
-                    $objProducto->setear(
-                        $fila["pronombre"],
-                        $fila["prodetalle"],
-                        $fila["procantstock"]
-                    );
-
-                    array_push($arreglo, $objProducto);
-                }
-            } else {
-                $this->setMensajeError("producto->listar: " . $bd->getError());
-            }
-        } else {
-            $this->setMensajeError("producto->listar: " . $bd->getError());
-        }
-
-        return $arreglo;
-    }
+    $this->mensajeError = "producto->insertar: " . $bd->getError();
+    return false;
 }
+
+public function modificar()
+{
+    $bd = new BaseDatos();
+    $sql = "UPDATE producto SET 
+                pronombre = '{$this->getProNombre()}',
+                prodetalle = '{$this->getProDetalle()}',
+                procantstock = '{$this->getProCantStock()}'
+            WHERE idproducto = '{$this->getIdProducto()}'";
+
+    if ($bd->Iniciar() && $bd->Ejecutar($sql)) {
+        return true;
+    }
+    $this->mensajeError = "producto->modificar: " . $bd->getError();
+    return false;
+}
+
+public static function listar($condicion = "")
+{
+    $bd = new BaseDatos();
+    $sql = "SELECT * FROM producto ";
+    if ($condicion != "") {
+        $sql .= " WHERE " . $condicion;
+    }
+
+    $arreglo = [];
+    if ($bd->Iniciar() && $bd->Ejecutar($sql)) {
+        while ($fila = $bd->Registro()) {
+            $obj = new Producto();
+            $obj->setIdProducto($fila["idproducto"]);
+            $obj->setear($fila["pronombre"], $fila["prodetalle"], $fila["procantstock"]);
+            $arreglo[] = $obj;
+        }
+    }
+    return $arreglo;
+}
+}
+?>
