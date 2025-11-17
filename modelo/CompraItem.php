@@ -56,7 +56,7 @@ class CompraItem {
 
     public function insertar(){
         $bd = new BaseDatos;
-        $sql = "INSERT INTO compraitem VALUES('" . $this->getIdProducto() . "','" . $this->getidCompra() . "','" . $this->getCiCantidad() . "'";
+        $sql = "INSERT INTO compraitem (idproducto, idcompra, cicantidad) VALUES('" . $this->getIdProducto() . "','" . $this->getidCompra() . "','" . $this->getCiCantidad() . "')";
                 if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $salida = true;
@@ -135,8 +135,8 @@ class CompraItem {
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
                 $arreglo = [];
-                $obj = new CompraItem();
-                foreach($bd->Registro() as $row){
+                while($row = $bd->Registro()){
+                    $obj = new CompraItem();
                     $obj->setear(
                 $row['idproducto'],
                 $row['idcompra'],
