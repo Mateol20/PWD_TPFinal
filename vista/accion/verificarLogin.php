@@ -6,10 +6,6 @@
 // Incluir configuracion.php (asegura que $ROOT y URL_ROOT estén definidos, y que funciones.php esté incluido)
 include_once __DIR__ . '/../../configuracion.php';
 
-// Incluir el controlador ABMusuario
-include_once $ROOT . 'Control/ABMusuario.php';
-// Incluir la clase Session (necesaria para manejar la sesión)
-include_once $ROOT . 'Modelo/Session.php';
 
 // Definición de la URL de redirección al Login
 $URL_LOGIN = URL_ROOT . "Vista/usuario/login.php";

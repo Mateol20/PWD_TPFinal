@@ -27,7 +27,7 @@ class Usuario
         return $this->mensajeError;
     }
 
-    public function getId()
+    public function getIdUsuario()
     {
         return $this->idUsuario;
     }
