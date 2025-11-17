@@ -26,20 +26,35 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
     
     <div class="ui three stackable cards">
         <?php foreach ($listaAutos as $auto) { ?>
-            <div class="card auto-card">
-                <div class="content">
-                    <div class="header"><?php echo $auto->getProNombre(); ?></div>
-                    <div class="description">
-                        <?php echo $auto->getProDetalle(); ?>
-                        <p><strong>Stock:</strong> <?php echo $auto->getProCantStock(); ?></p>
-                    </div>
-                </div>
-                <div class="extra content">
-                    <a class="ui primary button" href="../producto/ver.php?id=<?php echo $auto->getIdProducto(); ?>">
-                        Ver Detalles
-                    </a>
-                </div>
+<?php foreach ($listaAutos as $auto) { 
+    $id = $auto->getIdProducto();
+    $rutaImg = "../../imagenes/autos/" . $id . ".jpg";
+?>
+    <div class="card auto-card">
+
+        <?php if (file_exists($rutaImg)) { ?>
+            <div class="image">
+                <img src="<?php echo $rutaImg; ?>" alt="<?php echo $auto->getProNombre(); ?>">
             </div>
+        <?php } ?>
+
+        <div class="content">
+            <div class="header"><?php echo $auto->getProNombre(); ?></div>
+            <div class="description">
+                <?php echo $auto->getProDetalle(); ?>
+                <p><strong>Stock:</strong> <?php echo $auto->getProCantStock(); ?></p>
+            </div>
+        </div>
+
+        <div class="extra content">
+            <a class="ui primary button" href="../producto/ver.php?id=<?php echo $id; ?>">
+                Ver Detalles
+            </a>
+        </div>
+
+    </div>
+<?php } ?>
+
         <?php } ?>
     </div>
 
