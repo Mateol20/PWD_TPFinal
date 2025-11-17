@@ -24,7 +24,9 @@ $INICIO = "Location:" . URL_ROOT . "vista/login/login.php";
 
 // variable que define la pagina principal del proyecto (menu principal)
 // Ahora usa la constante URL_ROOT
-$PRINCIPAL = "Location:" . URL_ROOT . "principal.php";
+$PRINCIPAL = "http://" . $_SERVER['HTTP_HOST'] . "/Vista/index.php";
+$RUTANAV = $ROOT . '/Vista/Estructura/navbar.php';
+$RUTAVISTA = "http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/vista/";
 
 
 $_SESSION['ROOT'] = $ROOT;

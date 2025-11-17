@@ -1,94 +1,138 @@
 <?php
+
 class Session
 {
 
-    private $objUsuario;
-    private $objRol;
-
+    // Inicia la sesión
     public function __construct()
     {
-        // Asegurarse de que la sesión comience si no está iniciada
-        if (session_status() == PHP_SESSION_NONE) {
+        if (!self::activa()) {
             session_start();
         }
-        $this->objUsuario = null;
-        $this->objRol = null;
-
-        // Cargar el usuario y rol de la sesión si existen
-        if ($this->activa()) {
-            if (isset($_SESSION['usuario_obj'])) {
-                $this->objUsuario = $_SESSION['usuario_obj'];
-            }
-            if (isset($_SESSION['rol_obj'])) {
-                $this->objRol = $_SESSION['rol_obj'];
-            }
-        }
-    }
-
-    public function getUsuario()
-    {
-        return $this->objUsuario;
-    }
-    public function setUsuario($dato)
-    {
-        $this->objUsuario = $dato;
-        // Opcional: guardar en la sesión para persistencia si estás usando __construct para cargar
-        // $_SESSION['usuario_obj'] = $dato; 
-    }
-
-    public function getRol()
-    {
-        return $this->objRol;
-    }
-    public function setRol($dato)
-    {
-        $this->objRol = $dato;
-        // Opcional: guardar en la sesión para persistencia
-        // $_SESSION['rol_obj'] = $dato;
-    }
-
-    public function iniciar($nombre, $pass)
-    {
-        // Esto solo inicia la sesión, la validación debería ir en ControlUsuario/Login
-        $_SESSION['usnombre'] = $nombre;
-        $_SESSION['uspass'] = $pass;
     }
 
     /**
-     * Valida si la sesión actual tiene credenciales válidas.
-     * En un login exitoso, esta función se encargaría de guardar el ID y el objeto Usuario en $_SESSION.
-     * @return boolean
+     * Actualiza las variables de sesión con el ID del usuario
+     * @param int $idUsuario
+     * @return void
+     */
+    public function iniciar($nombreUsuario, $psw)
+    {
+
+        $obj = new AbmUsuario();
+
+        $param["usnombre"] = $nombreUsuario;
+        $param["uspass"] = $psw;
+        $param["usdeshabilitado"] = NULL;
+
+        $resultado = $obj->buscar($param);
+        if (count($resultado) > 0) {
+            $usuario = $resultado[0];
+            $_SESSION['idUsuario'] = $usuario->getUsuarioId();
+        } else {
+            $this->cerrar();
+        }
+
+        $resultado = $obj->buscar($param);
+    }
+
+    /**
+     * Valida si la sesión actual tiene un ID de usuario válido
+     * @return bool
      */
     public function validar()
     {
-        // Esta función típicamente contiene la lógica de base de datos para verificar credenciales.
-        // Si tienes un ID en la sesión, la usas para validar.
-        $resp = false;
-        if ($this->activa() && isset($_SESSION["idusuario"])) {
-            $resp = true;
-        }
-        return $resp;
+        return isset($_SESSION['idUsuario']);
     }
 
     /**
-     * Devuelve true o false si hay un USUARIO logueado (NO solo si la sesión de PHP está activa).
-     * @return boolean
+     * Verifica que la sesión esté activa
+     * @return bool
      */
-    public function activa()
+    public static function activa()
     {
-        // La sesión está activa si:
-        // 1. PHP ha iniciado la sesión (session_status() == PHP_SESSION_ACTIVE).
-        // 2. Y existe una clave que solo se pone al loguearse (como 'idusuario').
-        $resp = false;
-        if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['idusuario'])) {
-            $resp = true;
-        }
-        return $resp;
+        return session_status() === PHP_SESSION_ACTIVE;
     }
 
+    /**
+     * Devuelve el ID del usuario logueado
+     * @return mixed
+     */
+    public function getUsuario()
+    {
+        return $_SESSION['idUsuario'] ?? null;
+    }
+
+
+    /**
+     * Devuelve el ID de la compra
+     * @return mixed
+     */
+    public function getCompra()
+    {
+        return $_SESSION['idUsuario'] ?? null;
+    }
+
+
+    public function setCompra($id)
+    {
+        $_SESSION['idCompra'] = $id;
+    }
+
+    /**
+     * Devuelve el rol del usuario logueado
+     * @return mixed
+     */
+    public function getRol()
+    {
+        $rol = null;
+        $idUsuario = $this->getUsuario();
+        if ($idUsuario) {
+            $abmUsuarioRol = new AbmUsuarioRol();
+            $param = ['idusuario' => $idUsuario];
+            $usuarioRoles = $abmUsuarioRol->buscar($param);
+            if (count($usuarioRoles) > 0) {
+                $usuarioRol = $usuarioRoles[0];
+                $rol = $usuarioRol->getobjRol()->getidrol();
+            }
+        }
+        return $rol;
+    }
+
+    /**
+     * Cierra la sesión actual
+     * @return void
+     */
     public function cerrar()
     {
         session_unset();
         session_destroy();
+    }
+
+    /**
+     * 
+     */
+    public function getCarrito()
+    {
+
+        if (!isset($_SESSION['carrito'])) {
+            $_SESSION['carrito'] = [];
+        }
+        return $_SESSION['carrito'];
+    }
+
+    public function setCarrito($array)
+    {
+        $_SESSION['carrito'] = $array;
+    }
+
+
+    /**
+     * Devuelve una representación en cadena de la sesión
+     * @return string
+     */
+    public function __toString()
+    {
+        return json_encode($_SESSION, JSON_PRETTY_PRINT);
     }
 }
