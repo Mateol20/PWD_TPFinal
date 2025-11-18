@@ -25,12 +25,19 @@ function data_submitted()
 function autoloader($class_name)
 {
     $directorys = array(
-        $_SESSION['ROOT'] . 'modelo/',
-        $_SESSION['ROOT'] . 'vista/',
+        // RUTA CORRECTA A CONTROL/ (minúsculas)
         $_SESSION['ROOT'] . 'control/',
+
+        // RUTA CORRECTA A MODELO/ (minúsculas)
+        $_SESSION['ROOT'] . 'modelo/',
+
+        // Otras rutas que uses (vista/, modelo/conector/, etc.)
+        $_SESSION['ROOT'] . 'vista/',
         $_SESSION['ROOT'] . 'modelo/conector/',
-        $_SESSION['ROOT'] . 'control/'
+
+        // Asegúrate de que no haya rutas duplicadas o innecesarias
     );
+
     foreach ($directorys as $directory) {
         if (file_exists($directory . $class_name . '.php')) {
             require_once($directory . $class_name . '.php');

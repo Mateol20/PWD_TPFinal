@@ -52,19 +52,25 @@ class ABMMenu
     public function buscar($param)
     {
         $where = " true ";
-        if ($param != null) {
-            foreach ($param as $clave => $valor) {
-                // Si la clave no es numérica, la tratamos como un campo
-                if (is_numeric($valor)) {
-                    $where .= " and " . $clave . "=" . $valor;
-                } else {
-                    $where .= " and " . $clave . "='" . $valor . "'";
-                }
-            }
+        if ($param != NULL) {
+            if (isset($param['idmenu']))
+                $where .= " and idmenu =" . $param['idmenu'];
+            if (isset($param['menombre']))
+                $where .= " and menombre ='" . $param['menombre'] . "'";
+            if (isset($param['medescripcion']))
+                $where .= " and medescripcion ='" . $param['medescripcion'] . "'";
+            if (isset($param['idpadre']))
+                $where .= " and idpadre =" . $param['idpadre'];
+            if (isset($param['medeshabilitado']) && $param['medeshabilitado'] !== null)
+                $where .= " and medeshabilitado ='" . $param['medeshabilitado'] . "'";
+            if (isset($param['medeshabilitado']) && $param['medeshabilitado'] === null)
+                $where .= " and medeshabilitado is null";
         }
+
         $arreglo = Menu::listar($where);
         return $arreglo;
     }
+    
 
     // --- OPERACIONES CRUD PRINCIPALES ---
 

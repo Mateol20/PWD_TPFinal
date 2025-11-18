@@ -277,14 +277,9 @@ class ABMUsuario
         return null;
     }
 
-
-    // ABMUsuario.php
-    // ABMUsuario.php
-    // ABMUsuario.php
     public function verificarUsuario($nombreUsuario, $password)
     {
         $usuario = $this->buscarUsuarioPorNombre($nombreUsuario);
-        $log_file = __DIR__ . "/login_debug.txt";
 
         if (!$usuario) {
             return null;
@@ -292,12 +287,6 @@ class ABMUsuario
 
         $hashAlmacenado = $usuario->getPass();
 
-        // Log para ver el hash y su longitud ANTES de la verificación
-        $msg = "[" . date('Y-m-d H:i:s') . "] DEBUG RECUPERACIÓN: Hash -> " . $hashAlmacenado . " (Longitud: " . strlen($hashAlmacenado) . ")\n";
-        file_put_contents($log_file, $msg, FILE_APPEND);
-
-        $msg = "[" . date('Y-m-d H:i:s') . "] DEBUG RECUPERACIÓN: Clave Form -> " . $password . "\n";
-        file_put_contents($log_file, $msg, FILE_APPEND);
 
 
         if (!password_verify($password, $hashAlmacenado)) {
@@ -307,9 +296,6 @@ class ABMUsuario
 
         return $usuario;
     }
-
-
-    // ABMUsuario.php
 
     public function registrarUsuario($param)
     {

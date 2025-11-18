@@ -1,33 +1,24 @@
 <?php
-
-
 include_once __DIR__ . '../../../configuracion.php';
 
 $session = new Session();
-$rol = $session->getRol();
-
+$rol = (int)$session->getRol();
 ?>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Incluir jQuery -->
+    <title><?= $page_title ?></title>
+
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Link Semantic UI -->
-    <link rel="stylesheet" href="<?= $RUTAVISTA ?>lib/Semantic-UI-CSS-master/semantic.css">
-    <script src="<?= $RUTAVISTA ?>Assets/Semantic-UI-CSS-master/semantic.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Semantic UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-
-    <!-- Hash MD5 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-
-
-    <title><?= $page_title ?></title>
 
     <style>
         body {
@@ -40,5 +31,13 @@ $rol = $session->getRol();
 </head>
 
 <body>
+
     <?php include $RUTANAV; ?>
+
+    <script>
+        $(document).ready(function() {
+            $('.ui.dropdown').dropdown(); // Inicializar dropdowns de Semantic UI
+        });
+    </script>
+
     <main>
