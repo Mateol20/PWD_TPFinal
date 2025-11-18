@@ -52,8 +52,6 @@ foreach ($carrito as $idAuto) {
         foreach ($autos as $auto):
 
             $id = $auto->getIdProducto();
-
-            // Días guardados o 1 por defecto
             $dias = $_SESSION['dias'][$id] ?? 1;
 
             $precioDia = 10000;

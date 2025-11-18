@@ -112,5 +112,27 @@ public static function listar($condicion = "")
     }
     return $arreglo;
 }
+
+    public function obtenerPorId(){
+         $salida = false;
+        $bd = new BaseDatos;
+        $sql = "SELECT * FROM compraestado WHERE idproducto =" . $this->getIdProducto();
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $linea = $bd->Registro();
+                $obj = new Producto;
+                $obj -> setIdProducto($linea['idproducto']);
+                $obj -> setProNombre($linea['pronombre']);
+                $obj -> setProDetalle($linea['prodetalle']);
+                $obj -> setProCantStock($linea['procantstock']);        
+                $salida = $obj;
+            }else{
+                $bd->getError();
+            }
+        }else{
+                $bd->getError();
+            }
+        return $salida;
+    }
 }
 ?>

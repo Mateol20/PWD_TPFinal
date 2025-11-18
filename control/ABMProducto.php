@@ -129,4 +129,40 @@ class ABMProducto
         }
         return $res;
     }
+
+public function actualizarStock() {
+    if (!isset($_SESSION['carrito'])) return;
+
+    $solicitados = $_SESSION['carrito'];
+
+    foreach($solicitados as $idAuto) {
+        // buscar producto usando array asociativo
+        $res = $this->buscar(['idproducto' => $idAuto]); // usar el nombre de columna correcto
+        if (!empty($res)) {
+            $objProducto = $res[0];
+
+            // Reducir stock usando los getters y setters correctos
+            $stockActual = $objProducto->getProCantStock(); // nombre correcto
+            $nuevoStock = $stockActual - 1;
+            $objProducto->setProCantStock($nuevoStock);
+
+            $objProducto->modificar();
+        }
+    }
+}
+
+
+
+    public function obtenerPorId($id)
+    {
+        $salida = false;
+        $obj = new Producto;
+        $obj->setIdProducto($id);
+        if ($resultado = $obj->obtenerPorId()) {
+            $salida = $resultado;
+        } else {
+            $this->getMensajeError();
+        }
+        return $salida;
+    }
 }
