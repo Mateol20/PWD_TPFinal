@@ -54,7 +54,7 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
                     </div>
 
                     <div class="extra content">
-                        <a class="ui primary button" href="../producto/ver.php?id=<?php echo $id; ?>">
+                        <a class="ui primary button" href="ver.php?id=<?php echo $id; ?>">
                             Ver Detalles
                         </a>
                     </div>
