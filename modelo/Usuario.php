@@ -91,19 +91,28 @@ class Usuario
         $this->setDeshabilitado($deshabilitado);
     }
 
+    // ... dentro de la clase Usuario
     public function insertar()
     {
-        $db = new BaseDatos;
+        $db = new BaseDatos; // Asumo que BaseDatos está disponible
         $salida = false;
-        // La columna usdeshabilitado es NULL por defecto, no es necesario incluirla aquí.
-        // Asumiendo que BaseDatos.php maneja las inyecciones SQL de forma segura
+
+        // NOTA: Tu SQL original no usa prepared statements, lo mantendremos por ahora:
         $sql = "INSERT INTO usuario (usnombre, uspass, usmail)
-        VALUES('" . $this->getNombre() . "', '" . $this->getPass() . "', '" . $this->getEmail() . "')";
+    VALUES('" . $this->getNombre() . "', '" . $this->getPass() . "', '" . $this->getEmail() . "')";
 
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
-                // Si el ID se autoincrementa en la DB, puedes usar una función como $db->getLastInsertId() aquí
+
+                // 🚨 SOLUCIÓN CLAVE: Obtener el ID autoincremental generado
+                // Debes tener un método en tu clase BaseDatos para esto.
+                $idGenerado = $db->getLastId();
+
+                if ($idGenerado > 0) {
+                    // Setea el ID en el objeto Usuario
+                    $this->setId($idGenerado);
+                }
             } else {
                 $this->setMensajeError("Usuario->insertar: " . $db->getError());
             }
@@ -123,7 +132,7 @@ class Usuario
             uspass = '" . $this->getPass() . "',
             usmail = '" . $this->getEmail() . "',
             usdeshabilitado = " . ($this->getDeshabilitado() === null ? 'NULL' : "'" . $this->getDeshabilitado() . "'") . " 
-            WHERE idusuario = '" . $this->getId() . "'";
+            WHERE idusuario = '" . $this->getIdUsuario() . "'";
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
@@ -142,7 +151,7 @@ class Usuario
     {
         $salida = false;
         $db = new BaseDatos;
-        $sql = "DELETE FROM Usuario WHERE idusuario ='" . $this->getId() . "'";
+        $sql = "DELETE FROM Usuario WHERE idusuario ='" . $this->getIdUsuario() . "'";
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;

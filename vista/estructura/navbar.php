@@ -9,7 +9,7 @@ $menus = $nav->getSubMenus($rol);
 
         <div class="sixteen wide column">
             <div class="ui menu">
-                <a href="index.php" class="item">
+                <a href="/PWD_TPfinal/Vista/index.php" class="item">
                     Inicio
                 </a>
 
@@ -28,14 +28,14 @@ $menus = $nav->getSubMenus($rol);
     <?php } else { ?>
         <div class="sixteen wide column">
             <div class="ui menu">
-                <a href="index.php" class="item">
+                <a href="/PWD_TPfinal/Vista/index.php" class="item">
                     Inicio
                 </a>
-                <a href="../Vista/login.php" class="item">
+                <a href="/PWD_TPfinal/Vista/usuario/login.php" class="item">
                     <i class="user icon"></i>
                     Iniciar Sesión
                 </a>
-                <a href="signup.php" class="item">
+                <a href="/PWD_TPfinal/Vista/usuario/registro.php" class="item">
                     <i class="sign out alternate icon"></i>
                     registrarse
                 </a>

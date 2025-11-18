@@ -5,28 +5,32 @@ use Respect\Validation\Validator as v;
 class ABMUsuario
 {
 
-    /**
-     * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto
-     * @param array $param
-     * @return Usuario|null
-     */
     private function cargarObjeto($param)
     {
         $obj = null;
 
         if (
-            array_key_exists('nombre', $param)
-            and array_key_exists('pass', $param)
-            and array_key_exists('mail', $param)
-            and array_key_exists('deshabilitado', $param)
+            array_key_exists('usnombre', $param) &&
+            array_key_exists('uspass', $param) &&
+            array_key_exists('usmail', $param)
         ) {
             $obj = new Usuario();
-            // Asumo que tu modelo Usuario tiene un método cargar($id, $nombre, $pass, $mail, $deshabilitado)
-            $id = $param["id"] ?? null;
-            $obj->cargar($id, $param["nombre"], $param["pass"], $param["mail"], $param["deshabilitado"]);
+
+            $id = $param['idusuario'] ?? null;
+            $deshab = $param['usdeshabilitado'] ?? null;
+
+            $obj->cargar(
+                $id,
+                $param['usnombre'],
+                $param['uspass'],
+                $param['usmail'],
+                $deshab
+            );
         }
+
         return $obj;
     }
+
 
     /**
      * Espera como parametro un arreglo asociativo donde las claves coinciden con los nombres de las variables instancias del objeto que son claves
@@ -68,13 +72,30 @@ class ABMUsuario
      */
     public function alta($param)
     {
-        $resp = array();
+        $resp = [];
+
         $elObjtTabla = $this->cargarObjeto($param);
 
-        if ($elObjtTabla != null and $elObjtTabla->insertar()) {
-            $resp = array('resultado' => true, 'error' => '', 'obj' => $elObjtTabla);
+        if ($elObjtTabla !== null) {
+
+            if ($elObjtTabla->insertar()) {
+                $resp = [
+                    'resultado' => true,
+                    'error'     => '',
+                    'obj'       => $elObjtTabla
+                ];
+            } else {
+                $resp = [
+                    'resultado' => false,
+                    'error'     => $elObjtTabla->getMensajeError()
+                ];
+            }
         } else {
-            $resp = array('resultado' => false, 'error' => $elObjtTabla->getMensajeError());
+            // 🛑 El objeto no se pudo cargar → evitar el fatal error
+            $resp = [
+                'resultado' => false,
+                'error'     => "No se pudo cargar el objeto Usuario en alta()"
+            ];
         }
 
         return $resp;
@@ -159,21 +180,40 @@ class ABMUsuario
     // ==================================================================================
 
     /**
-     * Le otorga un rol al usuario
+     * Asigna un rol al usuario.
      * @param array $param: ['id' => idUsuario, 'idrol' => idRol]
-     * @return boolean
+     * @return array ['resultado' => bool, 'mensaje' => string]
      */
-    public function darRol($param)
+    public function asignarRol($param)
     {
-        $resp = false;
+        $resp = [
+            'resultado' => false,
+            'mensaje'   => 'Error desconocido en asignarRol.'
+        ];
 
-        if ($this->seteadosCamposClaves($param) && isset($param["idrol"])) {
-            $objUsuarioRol = new UsuarioRol();
-            // Asumo que cargarClaves es cargar(idRol, idUsuario)
-            $objUsuarioRol->cargarClaves($param["idrol"], $param["id"]);
-            if ($objUsuarioRol->insertar()) {
-                $resp = true;
+        if (isset($param["id"]) && isset($param["idrol"])) {
+
+            // 🚨 CAMBIO CLAVE: Usamos ABMUsuarioRol para dar de alta la relación
+            $abmUsuarioRol = new ABMUsuarioRol();
+
+            // El ABMUsuarioRol necesita 'idusuario' y 'idrol', no solo 'id'
+            $datosRelacion = [
+                'idusuario' => $param['id'],
+                'idrol' => $param['idrol']
+            ];
+
+            // Llamar al alta del ABMUsuarioRol
+            $resultadoAltaRol = $abmUsuarioRol->alta($datosRelacion);
+
+            if ($resultadoAltaRol['resultado']) {
+                $resp['resultado'] = true;
+                $resp['mensaje'] = 'Rol asignado exitosamente.';
+            } else {
+                // Error capturado del ABMUsuarioRol
+                $resp['mensaje'] = "Fallo la asignación de rol: " . $resultadoAltaRol['error'];
             }
+        } else {
+            $resp['mensaje'] = "Faltan IDs de usuario o rol para asignar el rol.";
         }
 
         return $resp;
@@ -223,147 +263,93 @@ class ABMUsuario
         $arreglo = $obj->listar($where);
         return $arreglo ?? [];
     }
-
-    // ==================================================================================
-    // METODO DE REGISTRO
-    // ==================================================================================
-
-    /**
-     * Valida los datos y registra un nuevo usuario asignándole un rol por defecto (ID 2).
-     * @param array $datos Array asociativo con 'usnombre', 'usclave', 'usmail'.
-     * @return array {'resultado': bool, 'mensaje': string, 'errores_validacion': array|null}
-     */
-    public function registrarUsuario($datos)
+    public function buscarUsuarioPorNombre($nombreUsuario)
     {
-        $respuesta = [
-            'resultado' => false,
-            'mensaje' => 'Error desconocido en el registro.',
-            'errores_validacion' => null
-        ];
+        // Uso correcto del método buscar() del ABM
+        $param = ['nombre' => $nombreUsuario];
 
-        // 1. VERIFICAR EXISTENCIA (por nombre o email)
-        try {
-            $existeNombre = $this->buscar(['nombre' => $datos['usnombre']]);
-            if (count($existeNombre) > 0) {
-                $respuesta['mensaje'] = "El nombre de usuario ya existe.";
-                return $respuesta;
-            }
+        $lista = $this->buscar($param);
 
-            $existeMail = $this->buscar(['mail' => $datos['usmail']]);
-            if (count($existeMail) > 0) {
-                $respuesta['mensaje'] = "El email ya está registrado.";
-                return $respuesta;
-            }
-        } catch (\Exception $e) {
-            $respuesta['mensaje'] = "Error en validación o campos faltantes: " . $e->getMessage();
-            return $respuesta;
+        if (!empty($lista)) {
+            return $lista[0]; // retorna objeto Usuario
         }
 
-        // 2. PROCESO DE ALTA
-        // NOTA DE SEGURIDAD: Se usa MD5 para mantener la compatibilidad con el código original, 
-        // pero se recomienda usar password_hash() para mayor seguridad.
-        $passHash = md5($datos['usclave']);
+        return null;
+    }
 
-        $datosParaModelo = [
-            'nombre' => $datos['usnombre'],
-            'pass' => $passHash,
-            'mail' => $datos['usmail'],
-            'deshabilitado' => 'null' // Nuevo usuario no está deshabilitado
-        ];
 
-        $resultadoAlta = $this->alta($datosParaModelo);
+    // ABMUsuario.php
+    // ABMUsuario.php
+    // ABMUsuario.php
+    public function verificarUsuario($nombreUsuario, $password)
+    {
+        $usuario = $this->buscarUsuarioPorNombre($nombreUsuario);
+        $log_file = __DIR__ . "/login_debug.txt";
+
+        if (!$usuario) {
+            return null;
+        }
+
+        $hashAlmacenado = $usuario->getPass();
+
+        // Log para ver el hash y su longitud ANTES de la verificación
+        $msg = "[" . date('Y-m-d H:i:s') . "] DEBUG RECUPERACIÓN: Hash -> " . $hashAlmacenado . " (Longitud: " . strlen($hashAlmacenado) . ")\n";
+        file_put_contents($log_file, $msg, FILE_APPEND);
+
+        $msg = "[" . date('Y-m-d H:i:s') . "] DEBUG RECUPERACIÓN: Clave Form -> " . $password . "\n";
+        file_put_contents($log_file, $msg, FILE_APPEND);
+
+
+        if (!password_verify($password, $hashAlmacenado)) {
+            // ... (Log de fallo)
+            return null;
+        }
+
+        return $usuario;
+    }
+
+
+    // ABMUsuario.php
+
+    public function registrarUsuario($param)
+    {
+        // Aplicar trim a la clave plana (corrigiendo el posible problema anterior)
+        $clave_plana = trim($param['uspass']);
+
+        // Hasheo seguro
+        $param['uspass'] = password_hash($clave_plana, PASSWORD_DEFAULT);
+
+        // El campo deshabilitado arranca NULL
+        $param['usdeshabilitado'] = null;
+
+        // (Punto 1) Intentar el alta del Usuario
+        $resultadoAlta = $this->alta($param);
 
         if ($resultadoAlta['resultado']) {
-            /** @var Usuario $objUsuarioRecienCreado */
-            $objUsuarioRecienCreado = $resultadoAlta['obj'];
+            $objUsuario = $resultadoAlta['obj'];
+            $idUsuarioNuevo = $objUsuario->getIdUsuario();
+            $idRolPorDefecto = 12;
 
-            // 3. ASIGNACIÓN DE ROL POR DEFECTO (Asumo ID de Rol 2 = Cliente/Usuario Estándar)
-            $paramRol = [
-                'id' => $objUsuarioRecienCreado->getIdUsuario(),
-                'idrol' => 2
-            ];
+            // (Punto 2) Asignar el Rol por defecto
+            // 🚨 CAMBIO DE LLAMADA: darRol() -> asignarRol()
+            $resultadoRol = $this->asignarRol([
+                'id'    => $idUsuarioNuevo,
+                'idrol' => $idRolPorDefecto
+            ]);
 
-            if ($this->darRol($paramRol)) {
-                $respuesta['resultado'] = true;
-                $respuesta['mensaje'] = "Registro exitoso. Bienvenido.";
+            if ($resultadoRol['resultado']) { // 🚨 Ahora verifica el índice 'resultado'
+                // Éxito: Usuario creado y Rol asignado
+                return ['resultado' => true, 'mensaje' => 'Registro y asignación de rol exitosos.'];
             } else {
-                $respuesta['mensaje'] = "Registro exitoso, pero la asignación de rol por defecto falló.";
+                // Error: El usuario se creó, pero el rol falló.
+                // 🚨 DEVOLVER EL MENSAJE DE ERROR CAPTURADO
+                return [
+                    'resultado' => false,
+                    'mensaje'   => 'Registro de usuario exitoso, pero falló la asignación del rol: ' . $resultadoRol['mensaje']
+                ];
             }
         } else {
-            $respuesta['mensaje'] = "Error al insertar el usuario en la base de datos: " . $resultadoAlta['error'];
+            return $resultadoAlta;
         }
-
-        return $respuesta;
-    }
-    
-    // ==================================================================================
-    // METODO DE LOGIN
-    // ==================================================================================
-
-    /**
-     * Verifica las credenciales del usuario, establece la sesión y devuelve el resultado.
-     * @param string $usuario Nombre de usuario o email.
-     * @param string $clave Contraseña sin hashear.
-     * @return array {'resultado': bool, 'mensaje': string}
-     */
-    public function verificarUsuario($usuario, $clave)
-    {
-        $respuesta = ['resultado' => false, 'mensaje' => ''];
-
-        // 1. Buscar usuario por (nombre O email) Y que NO esté deshabilitado
-        $condicion = " (usnombre = '{$usuario}' OR usmail = '{$usuario}') AND usdeshabilitado IS NULL ";
-
-        $objUsuarioModelo = new Usuario();
-        $usuarios = $objUsuarioModelo->listar($condicion);
-
-        if (count($usuarios) == 1) {
-            /** @var Usuario $usuarioEncontrado */
-            $usuarioEncontrado = $usuarios[0];
-            $claveIngresada = $clave;
-            $hashGuardado = $usuarioEncontrado->getPass();
-
-            // 2. Verificar la contraseña (usando MD5 para compatibilidad con el registro)
-            if (md5($claveIngresada) === $hashGuardado) {
-
-                // 3. Éxito: Obtener roles y Cargar la Sesión
-                $idUsuario = $usuarioEncontrado->getIdUsuario();
-
-                $rolesUsuario = $this->buscarRoles(['id' => $idUsuario]);
-
-                if (empty($rolesUsuario)) {
-                    $respuesta['mensaje'] = "Error: El usuario existe pero no tiene roles asignados.";
-                    return $respuesta;
-                }
-                
-                // Obtenemos el primer rol
-                /** @var UsuarioRol $primerUsuarioRol */
-                $primerUsuarioRol = $rolesUsuario[0];
-                $objRol = $primerUsuarioRol->getObjRol();
-
-                // Cargar la Sesión 
-                $session = new Session();
-
-                $_SESSION['idusuario'] = $idUsuario;
-                $_SESSION['usuario_obj'] = $usuarioEncontrado;
-                $_SESSION['rol_obj'] = $objRol;
-
-                $respuesta['resultado'] = true;
-                $respuesta['mensaje'] = "Bienvenido, " . $usuarioEncontrado->getNombre();
-            } else {
-                $respuesta['mensaje'] = "Contraseña incorrecta.";
-            }
-        } else {
-            $respuesta['mensaje'] = "Usuario no encontrado o deshabilitado.";
-        }
-
-        return $respuesta;
-    }
-
-    /**
-     * Función vacía original.
-     */
-    public function verificarRegistro()
-    {
-        return null;
     }
 }

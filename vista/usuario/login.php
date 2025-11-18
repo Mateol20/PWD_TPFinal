@@ -65,7 +65,7 @@ unset($_SESSION['mensaje_exito']);
         <div class="field">
             <label>Contraseña</label>
             <!-- La clave debe ser 'usclave' como en el registro -->
-            <input type="password" name="usclave" placeholder="Contraseña" required>
+            <input type="password" name="uspass" placeholder="Contraseña" required>
         </div>
 
         <!-- Botón de Envío -->

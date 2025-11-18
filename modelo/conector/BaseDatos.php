@@ -244,10 +244,12 @@ class BaseDatos extends PDO
      * Retorna el ID de la última fila insertada o el valor de la secuencia.
      * Es un wrapper para el método nativo de PDO.
      * @return string|false
+     * @return string|false
      */
-    public function getLastId()
+    public function getLastId() // 🚨 CORRECCIÓN AQUÍ
     {
-        // Llama al método lastInsertId() de la clase padre (PDO)
+
+        return parent::lastInsertId();
     }
     /**
      * Escapa la cadena para ser usada de forma segura en consultas SQL.
@@ -257,11 +259,10 @@ class BaseDatos extends PDO
      */
     public function escapeString($str)
     {
-        // PDO::quote() escapa la cadena y le añade las comillas simples
-        // Ejemplo: "O'Malley" -> "'O\'Malley'"
+
         if ($this->conec) {
             return parent::quote($str);
         }
-        return "'" . $str . "'"; // Fallback si no hay conexión
+        return "'" . $str . "'";
     }
 }

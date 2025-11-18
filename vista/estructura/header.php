@@ -1,6 +1,7 @@
 <?php
 
-include_once __DIR__ . '/../estructura/header.php';
+
+include_once __DIR__ . '../../../configuracion.php';
 
 $session = new Session();
 $rol = $session->getRol();
@@ -25,7 +26,7 @@ $rol = $session->getRol();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 
-    <link rel="icon" href="../Vista/Assets/img/favicon.webp">
+
     <title><?= $page_title ?></title>
 
     <style>

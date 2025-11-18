@@ -10,7 +10,23 @@ class Session
             session_start();
         }
     }
+    // Guarda el ID del usuario en la sesión
+    public function setIdUsuario($idUsuario)
+    {
+        $_SESSION['idUsuario'] = $idUsuario;
+    }
 
+    // Guarda el rol en la sesión
+    public function setRol($rol)
+    {
+        $_SESSION['rol'] = $rol;
+    }
+
+    // Devuelve el rol desde sesión (si lo guardaste)
+    public function getRolDirecto()
+    {
+        return $_SESSION['rol'] ?? null;
+    }
     /**
      * Actualiza las variables de sesión con el ID del usuario
      * @param int $idUsuario

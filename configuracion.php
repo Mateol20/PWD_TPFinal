@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate ");
 
@@ -24,9 +25,10 @@ $INICIO = "Location:" . URL_ROOT . "vista/login/login.php";
 
 // variable que define la pagina principal del proyecto (menu principal)
 // Ahora usa la constante URL_ROOT
-$PRINCIPAL = "http://" . $_SERVER['HTTP_HOST'] . "/Vista/index.php";
+$PRINCIPAL = "Location: " . URL_ROOT . "Vista/index.php";
 $RUTANAV = $ROOT . '/Vista/Estructura/navbar.php';
 $RUTAVISTA = "http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/vista/";
+$URL_LOGIN = "http://" . $_SERVER['HTTP_HOST'] . "/$PROYECTO/vista/usuario/login.php";
 
-
+require_once $ROOT . "vendor/autoload.php";
 $_SESSION['ROOT'] = $ROOT;

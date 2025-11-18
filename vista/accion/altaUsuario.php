@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($datosRecibidos)) {
 // NOTA: El campo de contraseña del formulario es 'usclave'.
 $datos = [
     'usnombre' => $datosRecibidos['usnombre'] ?? '',
-    'usclave' => $datosRecibidos['usclave'] ?? '', // Contraseña para hashear
+    'uspass' => $datosRecibidos['uspass'] ?? '', // Contraseña para hashear
     'usmail' => $datosRecibidos['usmail'] ?? ''
 ];
 
@@ -42,7 +42,7 @@ $datos = [
 // =================================================================
 
 // El HASHING de $datos['usclave'] se realiza DENTRO de la función registrarUsuario del ABM.
-$abmUsuario = new AbmUsuario();
+$abmUsuario = new ABMUsuario;
 $resultado = $abmUsuario->registrarUsuario($datos);
 
 

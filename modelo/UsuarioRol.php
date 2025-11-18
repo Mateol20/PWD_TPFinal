@@ -1,9 +1,9 @@
 <?php
-// NOTA: Se asume que BaseDatos.php, Usuario.php y Rol.php están incluidos.
+
 
 class UsuarioRol
 {
-    // SE ELIMINA $idusuariorol. La clave es compuesta (Usuario y Rol)
+
     private $objUsuario; // Objeto Usuario
     private $objRol;     // Objeto Rol
     private $mensajeoperacion;
@@ -198,5 +198,14 @@ class UsuarioRol
             $this->setMensajeError("UsuarioRol->listar: " . $base->getError());
         }
         return $arreglo;
+    }
+    public function getIdRol()
+    {
+        // Verifica si el objeto Rol existe y devuelve su ID
+        $objRol = $this->getObjRol();
+        if ($objRol !== null) {
+            return $objRol->getIdRol();
+        }
+        return null;
     }
 }

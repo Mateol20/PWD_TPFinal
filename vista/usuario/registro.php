@@ -96,7 +96,7 @@ if (!empty($errores_detalle)) {
         <!-- Contraseña -->
         <div class="field">
             <label>Contraseña</label>
-            <input type="password" name="usclave" placeholder="Mínimo 8 caracteres" required>
+            <input type="password" name="uspass" placeholder="Mínimo 8 caracteres" required>
         </div>
 
         <!-- Correo Electrónico -->
