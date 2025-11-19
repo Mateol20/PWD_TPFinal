@@ -2,6 +2,13 @@
 include_once("../configuracion.php");
 include_once("../Control/ABMProducto.php");
 
+$session = new Session;
+$compra = new ABMCompra;
+$compraEstado = new ABMCompraEstado;
+
+$idcompra = $compra->alta($session->getUsuario());
+$compraEstado->alta($idcompra,1);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

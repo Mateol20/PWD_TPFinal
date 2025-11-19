@@ -18,32 +18,37 @@ class ABMCompraEstado
         $this->mensajeError = $mensaje;
     }
 
-    public function cargarObj($array)
+    public function cargarObj($idCompra,$idCompraEstadoTipo)
     {
         $obj = new CompraEstado;
-        $obj->setIdCompra($array['idcompra']);
-        $obj->setIdCompraEstadoTipo($array['idcompraestadotipo']);
+        $obj->setIdCompra($idCompra);
+        $obj->setIdCompraEstadoTipo($idCompraEstadoTipo);
         return $obj;
     }
 
-    public function alta($array)
+    public function alta($idCompra,$idCompraEstadoTipo)
     {
         $salida = false;
-        $obj = $this->cargarObj($array);
-        if ($obj->insertar()) {
-            $salida = true;
+        $obj = $this->cargarObj($idCompra,$idCompraEstadoTipo);
+        if ($ultimoID = $obj->insertar()) {
+            $salida = $ultimoID;
+            $obj->setIdCompraEstado($ultimoID);
         } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function modificar($array)
-    {
+    public function modificar($idCompraEstado,$idCompraEstadoTipo)
+    {   if($idCompraEstado == ''){
+        $bd = new BaseDatos;
+        $idCompraEstado = $bd -> getLastId();
+    }
+    echo $idCompraEstado;
         $salida = false;
         $obj = new CompraEstado;
-        $obj->setIdCompraEstadoTipo($array['idcompraestadotipo']);
-        $obj->setIdCompraEstado($array['idcompraestado']);
+        $obj->setIdCompraEstadoTipo($idCompraEstadoTipo);
+        $obj->setIdCompraEstado($idCompraEstado);
         if ($obj->modificar()) {
             $salida = true;
         } else {

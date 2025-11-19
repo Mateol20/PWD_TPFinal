@@ -25,8 +25,9 @@ class ABMCompra
         $salida = false;
         $objCompra = new Compra;
         $objCompra->setIdUsuario($idUsuario);
-        if ($objCompra->insertar()) {
-            $salida = true;
+        if ($ultimoID = $objCompra->insertar()) {
+            $salida = $ultimoID;
+            
         } else {
             $this->getMensajeError();
         }

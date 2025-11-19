@@ -41,8 +41,7 @@ class Compra{
         $respuesta = false;
         if($db->Iniciar()){
             if($db->Ejecutar($sql)){
-                $respuesta = true;
-                echo 'entre';
+                $respuesta = $db->getLastId();
             }else{
             echo $db->getError();
         }

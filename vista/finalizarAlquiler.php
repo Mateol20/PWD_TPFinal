@@ -1,6 +1,12 @@
 <?php
 include_once("../configuracion.php");
+$session = new Session;
+$compraEstado = new ABMCompraEstado;
 $abmProducto = new ABMProducto;
+$compra = new ABMCompra;
+
+$compraEstado->modificar('',3);
+
 $abmProducto->actualizarStock();
 
 if (isset($_SESSION['carrito'])) {
@@ -9,7 +15,6 @@ if (isset($_SESSION['carrito'])) {
 if (isset($_SESSION['dias'])) {
     unset($_SESSION['dias']);
 }
-
 
 
 // eliminar carrito y días

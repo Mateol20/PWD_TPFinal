@@ -73,11 +73,14 @@ class CompraEstado{
     public function insertar(){
         $salida = false;
         $bd = new BaseDatos;
-        $sql = "INSERT INTO compraestado (idcompra,idcompraestadotipo,cefechaini,cefechafin) VALUES
-        ('" . $this->getIdCompra() . "','" . $this->getIdCompraEstadoTipo() . "','" . date('Y-m-d H:i:s') . "','" . NULL . "')";
+        $sql = "INSERT INTO compraestado (idcompra, idcompraestadotipo, cefechaIni, cefechaFin)
+        VALUES (" . $this->getIdCompra() . ",
+                " . $this->getIdCompraEstadoTipo() . ",
+                '" . date('Y-m-d H:i:s') . "',
+                NULL)";
         if($bd->Iniciar()){
             if($bd->Ejecutar($sql)){
-                $salida = true;
+                $salida = $bd->getLastId();;
             }else{
                 $bd->getError();
             }
@@ -96,10 +99,10 @@ class CompraEstado{
             if($bd->Ejecutar($sql)){
                 $salida = true;
             }else{
-                $bd->getError();
+                echo $bd->getError();
             }
         }else{
-                $bd->getError();
+                echo $bd->getError();
             }
         return $salida;
     }
@@ -129,7 +132,7 @@ class CompraEstado{
                 $obj = new CompraEstado;
                 $obj -> setIdCompraEstado($linea['idcompraestado']);
                 $obj -> setIdCompra($linea['idcompra']);
-                $obj -> setIdCompraEstadoTipo($linea['idcompraestado']);
+                $obj -> setIdCompraEstadoTipo($linea['idcompraestadotipo']);
                 $obj -> setFechaIni($linea['cefechaini']);
                 $obj -> setFechaFin($linea['cefechafin']);
                 $salida = $obj;
@@ -159,7 +162,7 @@ class CompraEstado{
                 $arreglo = [];
                 while($linea = $bd->Registro()){
                     $obj = new CompraEstado;
-                $obj -> setIdCompra($linea['idcompraestado']);
+                $obj -> setIdCompraEstado($linea['idcompraestado']);
                 $obj -> setIdCompra($linea['idcompra']);
                 $obj -> setIdCompraEstadoTipo($linea['idcompraestado']);
                 $obj -> setFechaIni($linea['cefechaini']);

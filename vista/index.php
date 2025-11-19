@@ -1,6 +1,5 @@
 <?php
 include_once("../configuracion.php");
-
 $abmProducto = new ABMProducto();
 $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
 ?>
