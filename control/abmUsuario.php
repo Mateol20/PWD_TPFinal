@@ -326,7 +326,7 @@ class ABMUsuario
         if ($resultadoAlta['resultado']) {
             $objUsuario = $resultadoAlta['obj'];
             $idUsuarioNuevo = $objUsuario->getIdUsuario();
-            $idRolPorDefecto = 12;
+            $idRolPorDefecto = 3;
 
             // (Punto 2) Asignar el Rol por defecto
             // 🚨 CAMBIO DE LLAMADA: darRol() -> asignarRol()
