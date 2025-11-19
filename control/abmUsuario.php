@@ -41,11 +41,16 @@ class ABMUsuario
     {
         $obj = null;
 
-        if (isset($param['id'])) {
+        $id = $param['idusuario'] ?? $param['id'] ?? null;
+
+        if ($id !== null) {
             $obj = new Usuario();
-            $obj->buscar($param["id"]);
+
+            if ($obj->buscar($id)) {
+                return $obj;
+            }
         }
-        return $obj;
+        return null;
     }
 
 
@@ -57,8 +62,10 @@ class ABMUsuario
     private function seteadosCamposClaves($param)
     {
         $resp = false;
-        if (isset($param['id']))
+        // ✅ Ahora acepta la clave 'idusuario' o 'id'
+        if (isset($param['idusuario']) || isset($param['id'])) {
             $resp = true;
+        }
         return $resp;
     }
 
@@ -111,11 +118,7 @@ class ABMUsuario
         $resp = false;
         if ($this->seteadosCamposClaves($param)) {
             $elObjtTabla = $this->cargarObjetoConClave($param);
-
-            // Borrado lógico: se setea la fecha de deshabilitación a "NOW()"
-            $elObjtTabla->setDeshabilitado("NOW()");
-
-            if ($elObjtTabla != null and $elObjtTabla->modificar()) {
+            if ($elObjtTabla != null and $elObjtTabla->eliminar()) {
                 $resp = true;
             }
         }
@@ -131,12 +134,19 @@ class ABMUsuario
     public function modificacion($param)
     {
         $resp = false;
+        // Debes asegurarte que seteadosCamposClaves acepte 'idusuario' (o simplemente pasamos el ID)
+
         if ($this->seteadosCamposClaves($param)) {
-            // Cargar el objeto con los nuevos datos
+
             $elObjtTabla = $this->cargarObjeto($param);
 
-            // Asegurar que el ID está seteado
-            $elObjtTabla->setId($param["id"]);
+            // 💡 CORRECCIÓN: Determinar el ID correctamente
+            $id = $param['id'] ?? $param['idusuario'] ?? null;
+
+            if ($id !== null) {
+                $elObjtTabla->setId($id); // Setea el ID en el objeto antes de modificar
+            }
+
 
             if ($elObjtTabla != null and $elObjtTabla->modificar()) {
                 $resp = true;
@@ -153,16 +163,18 @@ class ABMUsuario
     public function buscar($param)
     {
         $where = " true ";
-        // Claves del array $param que recibes
-        $claves = ["id", "nombre", "pass", "mail", "deshabilitado"];
-        // Claves de la base de datos (DB) correspondientes
-        $db = ["idusuario", "usnombre", "uspass", "usmail", "usdeshabilitado"];
+
+        // 💡 CORRECCIÓN: Agregar 'idusuario' a las claves esperadas
+        $claves = ["id", "idusuario", "nombre", "pass", "mail", "deshabilitado"];
+        $db     = ["idusuario", "idusuario", "usnombre", "uspass", "usmail", "usdeshabilitado"];
 
 
         if ($param <> null) {
             for ($i = 0; $i < count($claves); $i++) {
                 if (isset($param[$claves[$i]])) {
-                    // Nota: Idealmente, usar prepared statements
+                    // Asegurar que solo se añade una vez al WHERE
+                    if ($claves[$i] == 'id' && isset($param['idusuario'])) continue;
+
                     $where .= " and " . $db[$i] . " = '" . $param[$claves[$i]]  . "'";
                 }
             }
@@ -314,7 +326,7 @@ class ABMUsuario
         if ($resultadoAlta['resultado']) {
             $objUsuario = $resultadoAlta['obj'];
             $idUsuarioNuevo = $objUsuario->getIdUsuario();
-            $idRolPorDefecto = 2;
+            $idRolPorDefecto = 12;
 
             // (Punto 2) Asignar el Rol por defecto
             // 🚨 CAMBIO DE LLAMADA: darRol() -> asignarRol()

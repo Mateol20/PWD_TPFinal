@@ -35,11 +35,13 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
         <div class="ui three stackable cards">
             <?php foreach ($listaAutos as $auto) {
                 $id = $auto->getIdProducto();
-                $rutaImg = "../imagenes/autos/" . $id . ".jpg";
+                $rutaImg = $ROOT . "imagenes/autos/" . $id . ".jpg";
             ?>
                 <div class="card auto-card">
 
-                    <?php if (file_exists($rutaImg)) { ?>
+                    <?php
+                    echo "<!-- Ruta generada: $rutaImg -->";
+                    if (file_exists($rutaImg)) { ?>
                         <div class="image">
                             <img src="<?php echo $rutaImg; ?>" alt="<?php echo $auto->getProNombre(); ?>">
                         </div>

@@ -10,10 +10,12 @@ class ABMRol
     private function cargarObjeto($param)
     {
         $obj = null;
-        if (isset($param['rodescripcion'])) {
-            $id = $param["idrol"] ?? null;
+
+        if (array_key_exists('idrol', $param) && array_key_exists('roldescripcion', $param)) {
+
+
             $obj = new Rol();
-            $obj->cargar($id, $param["rodescripcion"]);
+            $obj->cargar($param['idrol'], $param['roldescripcion']);
         }
         return $obj;
     }
@@ -59,16 +61,12 @@ class ABMRol
      */
     public function alta($param)
     {
-        $resp = array('resultado' => false, 'error' => '', 'obj' => null);
-        $elObjtTabla = $this->cargarObjeto($param);
-
-        if ($elObjtTabla != null and $elObjtTabla->insertar()) {
-            $resp['resultado'] = true;
-            $resp['obj'] = $elObjtTabla;
-        } else {
-            $resp['error'] = "Error al insertar el Rol: " . $elObjtTabla->getMensajeError();
+        $resp = false;
+        $param['idrol'] = null;
+        $objUsuario = $this->cargarObjeto($param);
+        if ($objUsuario != null and $objUsuario->insertar()) {
+            $resp = true;
         }
-
         return $resp;
     }
 
@@ -101,23 +99,16 @@ class ABMRol
      */
     public function modificacion($param)
     {
-        $resp = array('resultado' => false, 'error' => '');
-
+        $resp = false;
         if ($this->seteadosCamposClaves($param)) {
-            // Asegurar que se cargue con el ID
-            $param['idrol'] = $param['idrol'];
-            $elObjtTabla = $this->cargarObjeto($param);
-
-            if ($elObjtTabla != null and $elObjtTabla->modificar()) {
-                $resp['resultado'] = true;
-            } else {
-                $resp['error'] = "Error al modificar el Rol: " . $elObjtTabla->getMensajeError();
+            $objUsuario = $this->cargarObjeto($param);
+            if ($objUsuario != null and $objUsuario->modificar()) {
+                $resp = true;
             }
-        } else {
-            $resp['error'] = "Falta el ID clave para la modificación.";
         }
         return $resp;
     }
+
 
     /**
      * Permite buscar objetos Rol.

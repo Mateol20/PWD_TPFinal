@@ -168,37 +168,42 @@ class UsuarioRol
      * @param string $condicion
      * @return array de objetos UsuarioRol
      */
-    public function listar($condicion = "")
+    public static function listar($parametro = "")
     {
-        $arreglo = array();
+        $arreglo = [];
         $base = new BaseDatos();
-        $sql = "SELECT * FROM usuariorol ";
-        if ($condicion != "") {
-            $sql .= ' WHERE ' . $condicion;
+        $sql = "SELECT * FROM usuariorol";
+        if ($parametro != "") {
+            $sql .= ' WHERE ' . $parametro;
         }
-
         $res = $base->Ejecutar($sql);
+
         if ($res > -1) {
             if ($res > 0) {
                 while ($row = $base->Registro()) {
-                    $obj = new UsuarioRol();
+
+                    // Crear objetos Usuario y Rol
                     $objUsuario = new Usuario();
                     $objRol = new Rol();
 
-                    // Se cargan los objetos Usuario y Rol completos
-                    if ($objUsuario->buscar($row['idusuario']) && $objRol->buscar($row['idrol'])) {
-                        // Se llama a setear con solo los dos objetos
-                        $obj->setear($objUsuario, $objRol);
+                    // Cargar datos desde DB
+                    $objUsuario->buscar($row['idusuario']);
+                    $objRol->buscar($row['idrol']);
 
-                        array_push($arreglo, $obj);
-                    }
+                    // Crear relación UsuarioRol
+                    $objUR = new UsuarioRol();
+                    $objUR->setear($objUsuario, $objRol);
+
+                    $arreglo[] = $objUR;
                 }
             }
         } else {
-            $this->setMensajeError("UsuarioRol->listar: " . $base->getError());
+            error_log("UsuarioRol->listar: " . $base->getError());
         }
+
         return $arreglo;
     }
+
     public function getIdRol()
     {
         // Verifica si el objeto Rol existe y devuelve su ID

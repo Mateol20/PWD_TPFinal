@@ -21,29 +21,37 @@ class ABMMenu
     private function cargarObjeto($datos)
     {
         $obj = null;
-        if (array_key_exists('idmenu', $datos) && array_key_exists('menombre', $datos)) {
+
+        if (isset($datos['menombre'])) {
+
             $obj = new Menu();
+
             $idMenu = $datos['idmenu'] ?? null;
             $idPadre = $datos['idpadre'] ?? null;
+
+            // Construir objeto padre
+            $objPadre = null;
+            if (!empty($idPadre)) {
+                $objPadre = new Menu();
+                $objPadre->setIdmenu($idPadre);
+                $objPadre->cargar();
+            }
+
             $meDeshabilitado = $datos['medeshabilitado'] ?? null;
-            // Si idPadre viene como cadena vacía desde el formulario, lo convertimos a NULL
-            if ($idPadre === "") {
-                $idPadre = null;
-            }
-            // Si meDeshabilitado viene como cadena vacía, lo convertimos a NULL
-            if ($meDeshabilitado === "") {
-                $meDeshabilitado = null;
-            }
+            if ($meDeshabilitado === "") $meDeshabilitado = null;
+
             $obj->setear(
                 $idMenu,
                 $datos['menombre'] ?? '',
                 $datos['medescripcion'] ?? '',
-                $idPadre,
+                $objPadre,               // 👈 AHORA SÍ ES UN OBJETO
                 $meDeshabilitado
             );
         }
+
         return $obj;
     }
+
     /**
      * Espera un array de búsqueda y devuelve una colección de objetos Menu.
      * @param array $param
@@ -101,25 +109,22 @@ class ABMMenu
      * @param array $datos (Debe contener al menos 'idmenu')
      * @return boolean
      */
-    public function baja($datos)
+    public function baja($param)
     {
-        $res = false;
-        if (array_key_exists('idmenu', $datos)) {
+        $resp = false;
+        if (isset($param['idmenu'])) {
             $objMenu = new Menu();
-            $objMenu->setIdMenu($datos['idmenu']);
-
-            // Intenta leer el objeto primero para asegurar que existe
-            if ($objMenu->obtenerPorId()) {
-                if ($objMenu->eliminar()) {
-                    $res = true;
-                } else {
-                    $this->mensajeError = "ABMMenu->baja: " . $objMenu->getMensajeError();
+            $objMenu->setIdmenu($param['idmenu']);
+            if ($objMenu->cargar()) {
+                $fechaBaja = date('Y-m-d H:i:s');
+                $objMenu->setMeDeshabilitado($fechaBaja);
+                if ($objMenu->modificar()) {
+                    $resp = true;
                 }
-            } else {
-                $this->mensajeError = "ABMMenu->baja: El objeto a eliminar no existe.";
             }
         }
-        return $res;
+
+        return $resp;
     }
 
     /**
@@ -127,16 +132,23 @@ class ABMMenu
      * @param array $datos
      * @return boolean
      */
-    public function modificacion($datos)
+    public function modificacion($param)
     {
-        $res = false;
-        $objMenu = $this->cargarObjeto($datos);
+        $resp = false;
+        // ... (otras validaciones) ...
 
-        if ($objMenu != null && $objMenu->modificar()) {
-            $res = true;
-        } else {
-            $this->mensajeError = "ABMMenu->modificacion: " . $objMenu->getMensajeError();
+        $elObjtTabla = $this->cargarObjeto($param);
+
+        // 💡 Asegúrate de que estás tomando el ID del parámetro correcto
+        $id = $param['idmenu'] ?? $param['id'] ?? null;
+
+        if ($id !== null) {
+            $elObjtTabla->setIdMenu($id); // Setea el ID correcto
         }
-        return $res;
+
+        if ($elObjtTabla != null and $elObjtTabla->modificar()) { // Llama a Menu::modificar()
+            $resp = true;
+        }
+        return $resp;
     }
 }

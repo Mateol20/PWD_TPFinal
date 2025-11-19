@@ -51,7 +51,7 @@ if ($rol != 1) {
                         <td data-field="idmenu"><?php echo $menu->getIdmenu(); ?></td>
                         <td data-field="menombre"><?php echo $menu->getMenombre(); ?></td>
                         <td data-field="medescripcion"><?php echo $menu->getMedescripcion(); ?></td>
-                        <td data-field="idpadre"><?php echo $menu->getObjMenuPadre() ? $menu->getObjMenuPadre()->getIdmenu() : 'N/A'; ?></td>
+                        <td data-field="idpadre"><?php echo $menu->getObjMenuPadre() ? $menu->getObjMenuPadre()->getIdmenu() : ''; ?></td>
                         <td data-field="medeshabilitado"><?php echo $menu->getMedeshabilitado(); ?></td>
                         <td>
                             <button class="ui button" onclick="editMenu(<?php echo $menu->getIdmenu(); ?>)">Editar</button>

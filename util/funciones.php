@@ -1,25 +1,23 @@
 <?php
-
-/**
- * Retorna los datos enviados a través de POST o GET.
- * @return array
- */
 function data_submitted()
 {
-    $_AAux = array();
-    if (!empty($_POST))
-        $_AAux = $_POST;
-    else
-            if (!empty($_GET)) {
-        $_AAux = $_GET;
+    $data = [];
+
+    // Combinar POST y GET
+    if (!empty($_POST)) {
+        $data = array_merge($data, $_POST);
     }
-    if (count($_AAux)) {
-        foreach ($_AAux as $indice => $valor) {
-            if ($valor == "")
-                $_AAux[$indice] = 'null';
-        }
+    if (!empty($_GET)) {
+        $data = array_merge($data, $_GET);
     }
-    return $_AAux;
+
+    // Convertir strings vacíos en "null"
+    foreach ($data as $indice => $valor) {
+        if ($valor === "" || $valor === "null")
+            $_AAux[$indice] = null;
+    }
+
+    return $data;
 }
 
 function autoloader($class_name)

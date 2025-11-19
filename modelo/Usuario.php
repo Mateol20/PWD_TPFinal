@@ -90,27 +90,18 @@ class Usuario
         $this->setEmail($email);
         $this->setDeshabilitado($deshabilitado);
     }
-
-    // ... dentro de la clase Usuario
     public function insertar()
     {
-        $db = new BaseDatos; // Asumo que BaseDatos está disponible
+        $db = new BaseDatos;
         $salida = false;
-
-        // NOTA: Tu SQL original no usa prepared statements, lo mantendremos por ahora:
         $sql = "INSERT INTO usuario (usnombre, uspass, usmail)
     VALUES('" . $this->getNombre() . "', '" . $this->getPass() . "', '" . $this->getEmail() . "')";
 
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
-
-                // 🚨 SOLUCIÓN CLAVE: Obtener el ID autoincremental generado
-                // Debes tener un método en tu clase BaseDatos para esto.
                 $idGenerado = $db->getLastId();
-
                 if ($idGenerado > 0) {
-                    // Setea el ID en el objeto Usuario
                     $this->setId($idGenerado);
                 }
             } else {
@@ -126,40 +117,52 @@ class Usuario
     {
         $bd = new BaseDatos;
         $respuesta = false;
-        // Se corrige la sentencia SQL removiendo el punto y coma final (;) y agregando el campo usdeshabilitado.
+        $deshabilitadoSQL = $this->getDeshabilitado() === null ? 'NULL' : "'" . $this->getDeshabilitado() . "'";
+
         $sql = "UPDATE Usuario SET 
-            usnombre = '" . $this->getNombre() . "',
-            uspass = '" . $this->getPass() . "',
-            usmail = '" . $this->getEmail() . "',
-            usdeshabilitado = " . ($this->getDeshabilitado() === null ? 'NULL' : "'" . $this->getDeshabilitado() . "'") . " 
-            WHERE idusuario = '" . $this->getIdUsuario() . "'";
+        usnombre = '" . $this->getNombre() . "',
+        uspass = '" . $this->getPass() . "',
+        usmail = '" . $this->getEmail() . "',
+        usdeshabilitado = " . $deshabilitadoSQL . " 
+        WHERE idusuario = " . $this->getIdUsuario(); // 💡 Asegúrate de quitar comillas si idusuario es INT
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($sql)) {
                 $respuesta = true;
             } else {
-                $this->setMensajeError("Usuario->modificar: " . $bd->getError());
+                $errorDB = $bd->getError(); // 💡 Capturar el error de la DB
+                $this->setMensajeError("Usuario->modificar: " . $errorDB);
             }
         } else {
-            $this->setMensajeError("Usuario->modificar: " . $bd->getError());
+            $this->setMensajeError("Usuario->modificar (Iniciar DB): " . $bd->getError());
         }
-        return $respuesta;
+        return $respuesta; // Devuelve true si fue exitoso
     }
 
     // Se asume que el objeto ya tiene el ID cargado antes de llamar a eliminar
     public function eliminar()
     {
+        // Esto es la BAJA LÓGICA (lo que el ABMUsuario espera)
         $salida = false;
         $db = new BaseDatos;
-        $sql = "DELETE FROM Usuario WHERE idusuario ='" . $this->getIdUsuario() . "'";
+
+        // Obtener la fecha y hora actual para deshabilitar
+        $fechaActual = date('Y-m-d H:i:s');
+
+        // Sentencia SQL para la BAJA LÓGICA (UPDATE)
+        $sql = "UPDATE Usuario SET 
+            usdeshabilitado = '" . $fechaActual . "' 
+            WHERE idusuario ='" . $this->getIdUsuario() . "'";
+
         if ($db->Iniciar()) {
             if ($db->Ejecutar($sql)) {
                 $salida = true;
+                $this->setDeshabilitado($fechaActual); // Actualiza el objeto
             } else {
-                $this->setMensajeError("Usuario->eliminar: " . $db->getError());
+                $this->setMensajeError("Usuario->eliminar (Baja Lógica): " . $db->getError());
             }
         } else {
-            $this->setMensajeError("Usuario->eliminar: " . $db->getError());
+            $this->setMensajeError("Usuario->eliminar (Baja Lógica): " . $db->getError());
         }
         return $salida;
     }

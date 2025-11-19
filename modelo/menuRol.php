@@ -95,7 +95,7 @@ class menuRol
         return false;
     }
 
-    public function obtenerPorId() 
+    public function obtenerPorId()
     {
         $respuesta = false;
         $bd = new BaseDatos();
@@ -157,5 +157,25 @@ class menuRol
         }
 
         return $arregloMenuRol;
+    }
+    public function eliminarPorMenu()
+    {
+        $respuesta = false;
+        $bd = new BaseDatos();
+        $idMenu = $this->getObjMenu()->getIdMenu();
+
+        $sql = "DELETE FROM menurol WHERE idmenu = '{$idMenu}'";
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($sql)) {
+                $respuesta = true;
+            } else {
+                $this->setMensajeError("menuRol->eliminarPorMenu: " . $bd->getError());
+            }
+        } else {
+            $this->setMensajeError("menuRol->eliminarPorMenu: " . $bd->getError());
+        }
+
+        return $respuesta;
     }
 }

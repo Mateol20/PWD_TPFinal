@@ -91,6 +91,14 @@ class ABMUsuarioRol
         }
         return $resp;
     }
+    private function seteadosCamposClaves($param)
+    {
+        $resp = false;
+        if (isset($param['idusuario']) && isset($param['idrol'])) {
+            $resp = true;
+        }
+        return $resp;
+    }
 
     /**
      * Permite eliminar un rol asignado a un usuario (una relación) usando la clave compuesta.
@@ -99,25 +107,13 @@ class ABMUsuarioRol
      */
     public function baja($param)
     {
-        $resp = ['resultado' => false, 'error' => null];
-        $this->mensajeError = "";
-
-        // Para dar de baja, primero cargamos el objeto completo (con sus objetos Usuario y Rol)
-        $objUsuarioRol = $this->cargarObjeto($param);
-
-        if ($objUsuarioRol !== null) {
-            if ($objUsuarioRol->eliminar()) {
-                $resp['resultado'] = true;
-            } else {
-                $errorMsg = method_exists($objUsuarioRol, 'getMensajeError') ? $objUsuarioRol->getMensajeError() : "Error desconocido.";
-                $resp['error'] = "Error al intentar eliminar la relación UsuarioRol. " . $errorMsg;
+        $resp = false;
+        if ($this->seteadosCamposClaves($param)) {
+            $elObjtTabla = $this->cargarObjeto($param);
+            if ($elObjtTabla != null && $elObjtTabla->eliminar()) {
+                $resp = true;
             }
-        } else {
-            // Si cargarObjeto falla, devolvemos el error de carga.
-            $resp['resultado'] = false;
-            $resp['error'] = $this->mensajeError;
         }
-
         return $resp;
     }
 
@@ -126,19 +122,18 @@ class ABMUsuarioRol
      * @param array $param - Puede contener 'idusuario' y/o 'idrol'.
      * @return array de objetos UsuarioRol
      */
-    public function buscar($param = null)
+    public function buscar($param)
     {
-        $where = " 1=1 ";
+        $where = " true ";
         if ($param != NULL) {
-            if (isset($param['idusuario']))
-                $where .= " AND idusuario =" . $param['idusuario'];
-            if (isset($param['idrol']))
-                $where .= " AND idrol =" . $param['idrol'];
+            if (isset($param['idusuario'])) {
+                $where .= " and idusuario =" . $param['idusuario'];
+            }
+            if (isset($param['idrol'])) {
+                $where .= " and idrol =" . $param['idrol'];
+            }
         }
-
-        $obj = new UsuarioRol();
-        // Llama al método listar de la clase UsuarioRol
-        $arreglo = $obj->listar($where);
+        $arreglo = UsuarioRol::listar($where);
         return $arreglo;
     }
 

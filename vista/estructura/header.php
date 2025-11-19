@@ -3,6 +3,7 @@ include_once __DIR__ . '../../../configuracion.php';
 
 $session = new Session();
 $rol = (int)$session->getRol();
+$page_title = "Alquiler de Autos"
 ?>
 <!DOCTYPE html>
 <html lang="es">
