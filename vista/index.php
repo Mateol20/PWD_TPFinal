@@ -35,7 +35,7 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
         <div class="ui three stackable cards">
             <?php foreach ($listaAutos as $auto) {
                 $id = $auto->getIdProducto();
-                $rutaImg = $ROOT . "imagenes/autos/" . $id . ".jpg";
+                $rutaImg = "../imagenes/autos/" . $id . ".jpg";
             ?>
                 <div class="card auto-card">
 
