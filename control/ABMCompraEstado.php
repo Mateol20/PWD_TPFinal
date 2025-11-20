@@ -44,7 +44,7 @@ class ABMCompraEstado
         $bd = new BaseDatos;
         $idCompraEstado = $bd -> getLastId();
     }
-    echo $idCompraEstado;
+    // echo $idCompraEstado;
         $salida = false;
         $obj = new CompraEstado;
         $obj->setIdCompraEstadoTipo($idCompraEstadoTipo);

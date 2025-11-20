@@ -1,10 +1,16 @@
 <?php
 include_once("../configuracion.php");
 include_once("../Control/ABMProducto.php");
+$session = new Session ;
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+if ($session->getUsuario() == '') {
+    header("Location: usuario/login.php");
+    exit;
 }
+
+// if (session_status() === PHP_SESSION_NONE) {
+//     session_start();
+// }
 
 $abmProducto = new ABMProducto();
 
