@@ -4,5 +4,6 @@ include_once "../configuracion.php";
 
 $session = new Session();
 $session->cerrar();
-header("Location:" . $PRINCIPAL);
+header("Location: usuario/login.php");
+// header("Location:" . $PRINCIPAL);
 exit;
