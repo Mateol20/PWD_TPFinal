@@ -179,5 +179,15 @@ class CompraEstado{
         return $salida;
     }
 
-
+    public function obtenerUltimoId() {
+        $bd = new BaseDatos;
+        $sql = "SELECT MAX(idcompraestado) AS ultimo FROM compraestado";
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $data = $bd->Registro();
+                $ultimoId = $data['ultimo'];
+            }
+        }
+        return $ultimoId;
+    }
 }

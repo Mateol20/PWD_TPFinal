@@ -1,14 +1,12 @@
 <?php
 class ABMCompraEstado
 {
-
     private $mensajeError;
 
     public function __construct()
     {
         $this->mensajeError = "";
     }
-
     public function getMensajeError()
     {
         return $this->mensajeError;
@@ -17,6 +15,7 @@ class ABMCompraEstado
     {
         $this->mensajeError = $mensaje;
     }
+
 
     public function cargarObj($idCompra,$idCompraEstadoTipo)
     {
@@ -31,24 +30,26 @@ class ABMCompraEstado
         $salida = false;
         $obj = $this->cargarObj($idCompra,$idCompraEstadoTipo);
         if ($ultimoID = $obj->insertar()) {
-            $salida = $ultimoID;
+
             $obj->setIdCompraEstado($ultimoID);
+            $salida = $ultimoID;
         } else {
             $this->getMensajeError();
         }
         return $salida;
     }
 
-    public function modificar($idCompraEstado,$idCompraEstadoTipo)
-    {   if($idCompraEstado == ''){
-        $bd = new BaseDatos;
-        $idCompraEstado = $bd -> getLastId();
-    }
-    // echo $idCompraEstado;
+    public function modificar($idCompraEstado,$idCompraEstadoTipo){
         $salida = false;
         $obj = new CompraEstado;
+
+        if($idCompraEstado == ''){
+         $idCompraEstado = $obj->obtenerUltimoId();
+        }
+
         $obj->setIdCompraEstadoTipo($idCompraEstadoTipo);
         $obj->setIdCompraEstado($idCompraEstado);
+
         if ($obj->modificar()) {
             $salida = true;
         } else {

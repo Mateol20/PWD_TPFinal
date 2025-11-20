@@ -5,7 +5,7 @@ $compraEstado = new ABMCompraEstado;
 $abmProducto = new ABMProducto;
 $compra = new ABMCompra;
 
-$compraEstado->modificar('',3);
+    $compraEstado->modificar('',3);
 
 $abmProducto->actualizarStock();
 
