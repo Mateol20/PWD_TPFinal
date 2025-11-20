@@ -1,0 +1,63 @@
+/* ---- NAVBAR ---- */
+
+.ui.menu {
+  background-color: #1a1a1a !important;
+  border-radius: 0 !important;
+  padding: 8px 12px;
+}
+
+.ui.menu .item {
+  color: #ffffff !important;
+  font-weight: 500;
+  transition: 0.2s ease-in-out;
+}
+
+.ui.menu .item:hover {
+  background-color: #0078ff !important;
+  color: white !important;
+}
+
+/* Icono */
+.ui.menu .item i.icon {
+  color: #ffffff !important;
+}
+
+/* ---- BODY ---- */
+body {
+  background-color: #f3f4f7 !important;
+}
+
+/* ---- TITULOS ---- */
+h1,
+h2,
+h3 {
+  color: #1a1a1a !important;
+}
+
+/* ---- TABLAS ---- */
+.ui.table thead th {
+  background: #1a1a1a !important;
+  color: white !important;
+}
+
+.ui.table tbody tr:hover {
+  background-color: #eef3ff !important;
+}
+.ui.card {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
+}
+
+.ui.primary.button {
+  background-color: #0078ff !important;
+}
+
+.ui.primary.button:hover {
+  background-color: #005fcc !important;
+}

@@ -1,7 +1,7 @@
 <?php
 include_once("../configuracion.php");
 $abmProducto = new ABMProducto();
-$listaAutos = $abmProducto->buscar(null); // Trae todos los productos
+$listaAutos = $abmProducto->buscar(null);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -9,17 +9,26 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
 <head>
     <meta charset="UTF-8">
     <title>Alquiler de Autos - Página Principal</title>
+
     <style>
-        body {
-            background-color: #f4f9ff;
-        }
-
+        /* Estilos personalizados para las tarjetas */
         .auto-card {
-            margin-bottom: 25px;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            transition: transform .2s ease, box-shadow .2s ease;
         }
 
-        .ui.card .header {
-            font-size: 1.3em;
+        .auto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .auto-card .ui.primary.button {
+            background-color: #0078ff !important;
+        }
+
+        .auto-card .ui.primary.button:hover {
+            background-color: #005fcc !important;
         }
     </style>
 </head>
@@ -36,8 +45,7 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
                 $id = $auto->getIdProducto();
                 $rutaImg = "../imagenes/autos/" . $id . ".jpg";
             ?>
-                <div class="card auto-card">
-
+                <div class="ui card auto-card">
                     <?php
                     echo "<!-- Ruta generada: $rutaImg -->";
                     if (file_exists($rutaImg)) { ?>
@@ -59,11 +67,11 @@ $listaAutos = $abmProducto->buscar(null); // Trae todos los productos
                             Ver Detalles
                         </a>
                     </div>
-
                 </div>
             <?php } ?>
-
-
         </div>
-
     </div>
+    <?php include_once "./Estructura/footer.php"; ?>
+</body>
+
+</html>
