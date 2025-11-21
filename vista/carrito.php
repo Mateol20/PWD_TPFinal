@@ -2,15 +2,8 @@
 include_once("../configuracion.php");
 include_once("../Control/ABMProducto.php");
 $session = new Session ;
-
-if ($session->getUsuario() == '') {
-    header("Location: usuario/login.php");
-    exit;
-}
-
-// if (session_status() === PHP_SESSION_NONE) {
-//     session_start();
-// }
+$verificar = new verificarRol;
+$verificar->verificar(3);//verifica login, si el usuario tiene idRol 0 lo redirige a logeo
 
 $abmProducto = new ABMProducto();
 

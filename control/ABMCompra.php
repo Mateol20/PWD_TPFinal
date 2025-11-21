@@ -76,11 +76,33 @@ class ABMCompra
     {
         $salida = false;
         $objCompra = new Compra;
-        if ($lista = $objCompra->listar()) {
+        $lista = $objCompra->listar();
+        if (isset($lista)) {
             $salida = $lista;
         } else {
             $this->getMensajeError();
         }
         return $salida;
     }
+    public function listarComprasDeUsuario($usuario)
+    {
+         $lista = [];
+        $salida = false;
+        $objCompra = new Compra;
+        $objCompra -> setIdUsuario($usuario);
+        $listaObj = $objCompra->listarCompraDeUsuario();
+        if (isset($lista)) {
+            foreach ($listaObj as $obj){
+                    $lista[] = [
+            "idcompra" => $obj->getIdCompra(),
+            "cofecha" => $obj->getCoFecha()
+        ];
+            }
+            $salida = $lista;
+        } else {
+            $salida = $this->getMensajeError();
+        }
+        return $salida;
+    }
+
 }

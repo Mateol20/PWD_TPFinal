@@ -83,6 +83,18 @@ class ABMCompraEstado
         }
         return $salida;
     }
+    public function buscarPorCompra($id)
+    {
+        $salida = false;
+        $obj = new CompraEstado;
+        $obj->setIdCompra($id);
+        if ($resultado = $obj->obtenerPorIdCompra()) {
+            $salida = $resultado;
+        } else {
+            $this->getMensajeError();
+        }
+        return $salida;
+    }
 
     public function listar()
     {
@@ -90,6 +102,17 @@ class ABMCompraEstado
         $obj = new CompraEstado;
         if ($lista = $obj->listar()) {
             $salida = $lista;
+        } else {
+            $this->getMensajeError();
+        }
+        return $salida;
+    }
+    public function cancelarCompra($idCompra){
+        $salida = false;
+        $obj = new CompraEstado;
+        $obj->setIdCompra($idCompra);
+        if ($obj->cancelarCompra()) {
+            $salida = true;
         } else {
             $this->getMensajeError();
         }

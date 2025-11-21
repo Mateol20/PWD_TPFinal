@@ -1,11 +1,11 @@
 <?php
 include_once("../configuracion.php");
 $session = new Session;
-$compraEstado = new ABMCompraEstado;
+$ABMCompraEstado = new ABMCompraEstado;
 $abmProducto = new ABMProducto;
 $compra = new ABMCompra;
 
-    $compraEstado->modificar('',3);
+$ABMCompraEstado->modificar('',3);
 
 $abmProducto->actualizarStock();
 

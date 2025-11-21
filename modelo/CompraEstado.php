@@ -144,6 +144,28 @@ class CompraEstado{
             }
         return $salida;
     }
+    public function obtenerPorIdCompra(){
+         $salida = false;
+        $bd = new BaseDatos;
+        $sql = "SELECT * FROM compraestado WHERE idcompra =" . $this->getIdCompra();
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $linea = $bd->Registro();
+                $obj = new CompraEstado;
+                $obj -> setIdCompraEstado($linea['idcompraestado']);
+                $obj -> setIdCompra($linea['idcompra']);
+                $obj -> setIdCompraEstadoTipo($linea['idcompraestadotipo']);
+                $obj -> setFechaIni($linea['cefechaini']);
+                $obj -> setFechaFin($linea['cefechafin']);
+                $salida = $obj;
+            }else{
+                $bd->getError();
+            }
+        }else{
+                $bd->getError();
+            }
+        return $salida;
+    }
 
      /**
      * Obtiene una colección (array) de objetos Menu que cumplen una condición 
@@ -189,5 +211,22 @@ class CompraEstado{
             }
         }
         return $ultimoId;
+    }
+
+        public function cancelarCompra(){
+        $salida = false;
+        $bd = new BaseDatos;
+       $sql = "UPDATE compraestado SET idcompraestadotipo = 4 WHERE idcompra = " . $this->getIdCompra();
+
+        if($bd->Iniciar()){
+            if($bd->Ejecutar($sql)){
+                $salida = true;
+            }else{
+                echo $bd->getError();
+            }
+        }else{
+                echo $bd->getError();
+            }
+        return $salida;
     }
 }

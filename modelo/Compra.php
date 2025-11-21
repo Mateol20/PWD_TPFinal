@@ -25,7 +25,7 @@ class Compra{
         $this->idCompra = $dato;
     }
     public function setcoFecha($dato){
-        $this->coFecha = 'CURRENT_TIMESTAMP';
+        $this->coFecha = $dato;
     }
     public function setIdUsuario($dato){
         $this->idUsuario = $dato;
@@ -93,6 +93,28 @@ class Compra{
                 $this->setIdCompra($respuesta['idcompra']);
                 $this->setcoFecha($respuesta['cofecha']);
                 $this->setIdUsuario($respuesta['idusuario']);
+            }else{
+            echo $db->getError();
+        }
+        }else{
+            echo $db->getError();
+        }
+        return $respuesta;
+    }
+    public function listarCompraDeUsuario(){
+        $db = new BaseDatos;
+        $sql = "SELECT * FROM compra WHERE idusuario=". $this->getIdUsuario() . " ORDER BY cofecha DESC";
+        $objetos = [];
+        if($db->Iniciar()){
+            if($db->Ejecutar($sql)){
+               while($respuesta = $db->Registro()){
+                $objCompra = new Compra; 
+                $objCompra->setIdCompra($respuesta['idcompra']);
+                $objCompra->setcoFecha($respuesta['cofecha']);
+                $objCompra->setIdUsuario($respuesta['idusuario']);
+                array_push($objetos,$objCompra);
+                }
+            $respuesta = $objetos;
             }else{
             echo $db->getError();
         }
