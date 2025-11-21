@@ -13,7 +13,6 @@ if (isset($data['accion'])) {
     switch ($accion) {
         case 'alta':
             if (isset($data['pronombre']) && isset($data['prodetalle']) && isset($data['procantstock'])) {
-                // Aquí $data debe tener los 3 campos. El ABM se encarga de setearlos.
                 $respuesta = $abmProducto->alta($data);
                 if (!$respuesta) {
                     $mensaje = "No se pudo dar de alta el producto: " . $abmProducto->getMensajeError();
@@ -25,7 +24,6 @@ if (isset($data['accion'])) {
 
         case 'mod':
             if (isset($data['idproducto']) && isset($data['pronombre']) && isset($data['prodetalle']) && isset($data['procantstock'])) {
-                // El ABM necesita el ID para la modificación.
                 $respuesta = $abmProducto->modificacion($data);
                 if (!$respuesta) {
                     $mensaje = "La acción MODIFICACIÓN no pudo concretarse: " . $abmProducto->getMensajeError();
@@ -47,7 +45,6 @@ if (isset($data['accion'])) {
             break;
 
         case 'listar':
-            // Se devuelve la lista de productos para actualizar la tabla
             $list = $abmProducto->buscar(null);
             $arreglo_salida = array();
             foreach ($list as $elem) {
@@ -55,7 +52,6 @@ if (isset($data['accion'])) {
                 $nuevoElem["pronombre"] = $elem->getProNombre();
                 $nuevoElem["prodetalle"] = $elem->getProDetalle();
                 $nuevoElem["procantstock"] = $elem->getProCantStock();
-                // NOTA: No se incluye proprecio aquí si no existe en la clase Producto, siguiendo tu código original.
                 array_push($arreglo_salida, $nuevoElem);
             }
             // Devolver JSON y salir

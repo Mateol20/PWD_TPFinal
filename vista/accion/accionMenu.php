@@ -7,10 +7,6 @@ $data = data_submitted();
 $respuesta = false;
 $mensaje = "";
 $controlTablaMenu = new ControlTablaMenu();
-
-
-
-
 if (isset($data['accion'])) {
     $accion = $data['accion'];
 

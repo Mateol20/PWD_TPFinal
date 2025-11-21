@@ -11,7 +11,6 @@ $clave = $_POST['uspass'] ?? '';
 $errores = $validador->validar($usuario, $clave);
 
 if (!empty($errores)) {
-    // Redirigir con errores
     header("Location: ../usuario/login.php?error=" . urlencode(implode(", ", $errores)));
     exit;
 }
@@ -29,15 +28,12 @@ if ($objUsuario) {
 
         $idRol = $objUsuarioRol->getIdRol();
 
-
-        // 3. Guardar datos en sesión
         $session->setIdUsuario($objUsuario->getIdUsuario());
-        $session->setRol($idRol); // ⬅️ ¡CORREGIDO!
+        $session->setRol($idRol);
 
         header("Location: ../index.php?login=ok");
         exit;
     } else {
-        // El usuario existe pero no tiene roles asignados
         error_log("Login ERROR: Usuario sin rol asignado: " . $objUsuario->getIdUsuario());
         header("Location: ../usuario/login.php?error=Usuario sin rol asignado.");
         exit;

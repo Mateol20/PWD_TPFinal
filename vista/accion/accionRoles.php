@@ -54,7 +54,7 @@ if (isset($data['accion'])) {
                 array_push($arreglo_salida, $nuevoElem);
             }
             echo json_encode($arreglo_salida, null, 2);
-            exit; // Salir para no ejecutar el resto del script
+            exit;
 
         default:
             $mensaje = "Acción no válida";

@@ -160,7 +160,7 @@ if ($rol != 1) {
                                 showModalMessage('error', 'Error: ' + result.errorMsg);
                             } else {
                                 $('#dlgMenu').modal('hide');
-                                loadMenus(); // Reload the table data
+                                loadMenus();
                                 showMessage('success', 'Menu guardado exitosamente.');
                             }
                         } catch (e) {

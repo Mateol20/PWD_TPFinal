@@ -1,16 +1,11 @@
 <?php
-// NOTA: Asumimos que 'header.php' incluye las clases AbmRol, AbmUsuario y AbmUsuarioRol
 include_once 'estructura/header.php';
-
 // Inicializar los ABMs necesarios
 $abmRol = new AbmRol();
 $abmUsuario = new AbmUsuario();
 $abmUsuarioRol = new AbmUsuarioRol();
-$mensaje = ''; // Para mostrar mensajes de éxito o error al usuario
+$mensaje = '';
 
-// ==========================================================
-// 1. GESTIÓN DE ACCIONES (Alta, Baja, Modificación, Asignación)
-// ==========================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datos = $_POST;
@@ -30,12 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($datos['rodescripcion']) && !empty(trim($datos['rodescripcion']))) {
                     $resultado = $abmRol->alta($datos);
                     if ($resultado['resultado']) {
-                        $mensaje = "✅ Rol '{$datos['rodescripcion']}' creado con éxito.";
+                        $mensaje = "Rol '{$datos['rodescripcion']}' creado con éxito.";
                     } else {
-                        $mensaje = "❌ Error al crear el rol: " . ($resultado['error'] ?: "Error desconocido.");
+                        $mensaje = " Error al crear el rol: " . ($resultado['error'] ?: "Error desconocido.");
                     }
                 } else {
-                    $mensaje = "⚠️ La descripción del rol no puede estar vacía.";
+                    $mensaje = " La descripción del rol no puede estar vacía.";
                 }
                 break;
 
@@ -44,12 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($datos['idrol']) && isset($datos['rodescripcion']) && !empty(trim($datos['rodescripcion']))) {
                     $resultado = $abmRol->modificacion($datos);
                     if ($resultado['resultado']) {
-                        $mensaje = "✅ Rol ID {$datos['idrol']} modificado con éxito.";
+                        $mensaje = " Rol ID {$datos['idrol']} modificado con éxito.";
                     } else {
-                        $mensaje = "❌ Error al modificar el rol: " . ($resultado['error'] ?: "Error desconocido.");
+                        $mensaje = " Error al modificar el rol: " . ($resultado['error'] ?: "Error desconocido.");
                     }
                 } else {
-                    $mensaje = "⚠️ Faltan datos necesarios para la modificación (ID o Descripción).";
+                    $mensaje = " Faltan datos necesarios para la modificación (ID o Descripción).";
                 }
                 break;
 
@@ -58,12 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($datos['idrol'])) {
                     $resultado = $abmRol->baja($datos);
                     if ($resultado['resultado']) {
-                        $mensaje = "✅ Rol ID {$datos['idrol']} eliminado con éxito.";
+                        $mensaje = " Rol ID {$datos['idrol']} eliminado con éxito.";
                     } else {
-                        $mensaje = "❌ Error al eliminar el rol. Posiblemente existan usuarios asignados. " . ($resultado['error'] ?: "Error desconocido.");
+                        $mensaje = " Error al eliminar el rol. Posiblemente existan usuarios asignados. " . ($resultado['error'] ?: "Error desconocido.");
                     }
                 } else {
-                    $mensaje = "⚠️ Falta el ID del rol a eliminar.";
+                    $mensaje = " Falta el ID del rol a eliminar.";
                 }
                 break;
 
@@ -73,11 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $idUsuario = (int)$datos['idusuario'];
                     $idNuevoRol = (int)$datos['idrol'];
 
-                    // Buscar usuario para el mensaje
+
                     $usuarioInfo = $abmUsuario->buscar(['idusuario' => $idUsuario]);
                     $nombreUsuario = count($usuarioInfo) > 0 ? htmlspecialchars($usuarioInfo[0]->getNombre()) : "Usuario ID $idUsuario";
 
-                    // 1. Eliminar asignaciones anteriores (asumimos un solo rol por usuario)
                     $asignacionesActuales = $abmUsuarioRol->buscar(['idusuario' => $idUsuario]);
                     $exitoBaja = true;
                     foreach ($asignacionesActuales as $asignacion) {
@@ -90,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!$bajaResult['resultado']) {
                             $exitoBaja = false;
-                            $mensaje = "❌ Error al desasignar rol antiguo del {$nombreUsuario}: " . ($bajaResult['error'] ?: "Error desconocido.");
+                            $mensaje = " Error al desasignar rol antiguo del {$nombreUsuario}: " . ($bajaResult['error'] ?: "Error desconocido.");
                             break;
                         }
                     }
@@ -107,38 +101,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($resultado['resultado']) {
                                 $rolInfo = $abmRol->buscar(['idrol' => $idNuevoRol]);
                                 $nombreRol = count($rolInfo) > 0 ? $rolInfo[0]->getDescripcion() : "Rol ID $idNuevoRol";
-                                $mensaje = "✅ Rol '{$nombreRol}' asignado con éxito a {$nombreUsuario}.";
+                                $mensaje = " Rol '{$nombreRol}' asignado con éxito a {$nombreUsuario}.";
                             } else {
-                                $mensaje = "❌ Error al asignar el nuevo rol a {$nombreUsuario}: " . ($resultado['error'] ?: "Error desconocido.");
+                                $mensaje = " Error al asignar el nuevo rol a {$nombreUsuario}: " . ($resultado['error'] ?: "Error desconocido.");
                             }
                         } else {
-                            $mensaje = "✅ Roles desasignados para {$nombreUsuario}.";
+                            $mensaje = "Roles desasignados para {$nombreUsuario}.";
                         }
                     }
                 } else {
-                    $mensaje = "⚠️ Faltan datos necesarios para la asignación de rol.";
+                    $mensaje = " Faltan datos necesarios para la asignación de rol.";
                 }
                 break;
         }
     }
 }
 
-// ==========================================================
-// 2. OBTENER DATOS (para la visualización)
-// ==========================================================
+
 
 // Obtener lista de todos los roles
 $roles = $abmRol->buscar(null);
-
-// Obtener lista de todos los usuarios
 $usuarios = $abmUsuario->buscar(null);
-
-// Mapear el rol actual por ID de usuario para acceso rápido
 $rolesActualesPorUsuario = [];
 $asignaciones = $abmUsuarioRol->buscar(null);
 foreach ($asignaciones as $ur) {
-    // Usamos getObjRol() y getObjUsuario() para acceder a los datos
-    // Esto asume que getObjUsuario() devuelve un objeto con getIdUsuario()
     $rolesActualesPorUsuario[$ur->getObjUsuario()->getIdUsuario()] = $ur->getObjRol();
 }
 ?>
@@ -150,10 +136,8 @@ foreach ($asignaciones as $ur) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Roles</title>
-    <!-- Usamos Tailwind CSS para un diseño moderno y responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos personalizados para el formulario modal */
         .modal {
             display: none;
             position: fixed;
@@ -181,7 +165,6 @@ foreach ($asignaciones as $ur) {
             transition: all 0.2s ease-out;
         }
 
-        /* Estado activo para mostrar el modal con animación */
         .modal.mostrar-modal {
             display: flex;
         }
@@ -208,7 +191,7 @@ foreach ($asignaciones as $ur) {
 
     <div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-2xl">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-2 pb-2 border-indigo-200">
-            ⚙️ Administración de Roles
+            Administración de Roles
         </h1>
 
         <!-- Mensajes de Alerta -->
@@ -219,7 +202,6 @@ foreach ($asignaciones as $ur) {
                 <?= $mensaje ?>
             </div>
             <script>
-                // Ocultar el mensaje después de 5 segundos
                 setTimeout(() => {
                     const alert = document.getElementById('alert-message');
                     if (alert) alert.style.opacity = 0;
@@ -269,13 +251,13 @@ foreach ($asignaciones as $ur) {
                                     <!-- Botón Modificar (Abre Modal de Edición) -->
                                     <button onclick="abrirModalModificar(<?= $rol->getIdRol() ?>, '<?= htmlspecialchars($rol->getDescripcion(), ENT_QUOTES) ?>')"
                                         class="text-indigo-600 hover:text-indigo-900 mr-3 p-2 rounded-lg hover:bg-indigo-100 transition duration-150">
-                                        ✏️ Modificar
+                                        Modificar
                                     </button>
 
                                     <!-- Botón Eliminar (Abre Modal de Confirmación) -->
                                     <button onclick="abrirModalEliminar(<?= $rol->getIdRol() ?>, '<?= htmlspecialchars($rol->getDescripcion(), ENT_QUOTES) ?>')"
                                         class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-100 transition duration-150">
-                                        🗑️ Eliminar
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>
@@ -289,11 +271,8 @@ foreach ($asignaciones as $ur) {
             </p>
         <?php endif; ?>
 
-        <!-- ========================================================== -->
-        <!-- 3. SECCIÓN DE ASIGNACIÓN DE ROLES A USUARIOS -->
-        <!-- ========================================================== -->
         <div class="pt-6 border-t border-gray-200 mt-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">👥 Asignación de Roles a Usuarios</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4"> Asignación de Roles a Usuarios</h2>
 
             <?php if (count($usuarios) > 0): ?>
                 <div class="overflow-x-auto rounded-xl shadow-lg border border-gray-200">

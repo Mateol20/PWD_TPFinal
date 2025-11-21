@@ -27,7 +27,7 @@ $page_title = "Alquiler de Autos";
 
     <script>
         $(document).ready(function() {
-            $('.ui.dropdown').dropdown(); // Inicializar dropdowns de Semantic UI
+            $('.ui.dropdown').dropdown();
         });
     </script>
 

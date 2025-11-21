@@ -13,7 +13,7 @@ $List_Producto = $objControl->buscar(null);
 
     <div class="ui sixteen wide column">
 
-        <h2>ABM - Productos (Depósito) 📦</h2>
+        <h2>ABM - Productos (Depósito) </h2>
         <p>Control de inventario: Agregue, edite o elimine productos.</p>
 
         <div id="messageContainer" class="ui hidden message"></div>

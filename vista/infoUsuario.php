@@ -4,7 +4,6 @@ include_once "../Control/pagPublica.php";
 
 $idUsuario = $session->getUsuario();
 
-// Por si se ingresa a través de la URL
 $res = false;
 if ($idUsuario) {
     $abmUsuario = new AbmUsuario();
