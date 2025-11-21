@@ -3,9 +3,11 @@ include_once("../configuracion.php");
 include_once("../Control/ABMProducto.php");
 
 $session = new Session;
+$verifica = new verificarRol;
+$verifica -> verificar(3);
+
 $compra = new ABMCompra;
 $compraEstado = new ABMCompraEstado;
-
 $idcompra = $compra->alta($session->getUsuario());
 $compraEstado->alta($idcompra,1);
 
@@ -108,3 +110,7 @@ foreach ($carrito as $id) {
 
 </body>
 </html>
+<?php
+// unset($_SESSION['carrito']);
+// unset($_SESSION['dias']);
+?>

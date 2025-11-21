@@ -16,50 +16,85 @@ $comprasArray = $abmCompra->listarComprasDeUsuario($session->getUsuario());
     <meta charset="UTF-8">
     <title>Historial de Alquileres</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f3f3;
-            margin: 0;
-            padding: 25px;
-        }
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f2f2f2;
+        margin: 0;
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+    /* Contenedor principal */
+    .contenedor-tabla {
+        width: 95%;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
 
-        table {
-            width: 90%;
-            margin: auto;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        border-radius: 8px;
+        overflow: hidden;
+    }
 
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-        }
+    th {
+        background: #3f51b5;
+        color: white;
+        padding: 14px;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+        text-align: center;
+    }
 
-        th {
-            background: #4e73df;
-            color: white;
-            font-weight: bold;
-        }
+    td {
+        padding: 12px 15px;
+        font-size: 14px;
+        color: #444;
+        text-align: center;
+        border-bottom: 1px solid #e8e8e8;
+    }
 
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
+    tr:last-child td {
+        border-bottom: none;
+    }
 
-        .empty {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #666;
-        }
-    </style>
+    tr:hover td {
+        background: #f7f9ff;
+    }
+
+    /* Botón cancelar */
+    .btn-cancelar {
+        background: #ff4d4d;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 13px;
+        transition: 0.25s;
+        display: inline-block;
+    }
+
+    .btn-cancelar:hover {
+        background: #d12f2f;
+    }
+
+    .disabled-action {
+        color: #aaa;
+        font-size: 18px;
+    }
+
+    .empty {
+        margin-top: 40px;
+        text-align: center;
+        color: #666;
+        font-size: 18px;
+    }
+</style>
+
+
 </head>
 <body>
  <?php include("estructura/header.php"); ?>
@@ -69,7 +104,9 @@ $comprasArray = $abmCompra->listarComprasDeUsuario($session->getUsuario());
 
 <?php else: ?>
 
+<div class="contenedor-tabla">
 <table>
+
     <thead>
         <tr>
             <th>ID Compra</th>
@@ -94,22 +131,23 @@ $comprasArray = $abmCompra->listarComprasDeUsuario($session->getUsuario());
             <td><?= $hora ?></td>
             <td><?= $estado=$funcionesCompra->buscarCompraEstadoTipo($compra["idcompra"]) ?></td>
 
-            <td>
-                <?php if ($estado === "Iniciada"): ?>
-                    <a href="accion/accionCancelarCompra.php?id=<?= $compra["idcompra"] ?>"
-                        style="color: red; font-weight: bold;">
-                        Cancelar
-                    </a>
-                <?php else: ?>
-                    <span style="color: gray;">—</span>
-                <?php endif; ?>
-            </td>
+         <td>
+    <?php if ($estado === "Iniciada"): ?>
+        <a class="btn-cancelar" 
+           href="accion/accionCancelarCompra.php?id=<?= $compra['idcompra'] ?>">
+           Cancelar
+        </a>
+    <?php else: ?>
+        <span class="disabled-action">—</span>
+    <?php endif; ?>
+        </td>
+
         </tr>
-
     <?php endforeach; ?>
-
     </tbody>
 </table>
+</div>
+
 
 
 <?php endif; ?>
