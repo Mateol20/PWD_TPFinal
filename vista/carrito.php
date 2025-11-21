@@ -75,7 +75,7 @@ foreach ($carrito as $idAuto) {
                 <div class="extra">
 
                     <!-- FORMULARIO PARA MODIFICAR DIAS -->
-                    <form action="modificarDias.php" method="POST" class="ui form" style="max-width: 250px;">
+                    <form action="../control/modificarDias.php" method="POST" class="ui form" style="max-width: 250px;">
                         <input type="hidden" name="id" value="<?php echo $id; ?>">
 
                         <div class="field">
@@ -90,7 +90,7 @@ foreach ($carrito as $idAuto) {
 
                     <p><strong>Subtotal:</strong> $<?php echo number_format($subtotal, 0, ',', '.'); ?></p>
 
-                    <a href="quitarCarrito.php?id=<?php echo $id; ?>" 
+                    <a href="../control/quitarCarrito.php?id=<?php echo $id; ?>" 
                     class="ui red right floated button">
                         <i class="trash icon"></i> Eliminar
                     </a>

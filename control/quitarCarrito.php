@@ -22,5 +22,5 @@ if (isset($_SESSION['carrito'])) {
     }
 }
 
-header("Location: carrito.php");
+header("Location: ../vista/carrito.php");
 exit;

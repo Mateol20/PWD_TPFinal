@@ -102,7 +102,7 @@ $rutaImg = "../imagenes/autos/" . $id . ".jpg";
 
                 <div class="ui action buttons">
                     <?php if ($auto->getProCantStock() > 0): ?>
-                        <a href="agregarCarrito.php?id=<?php echo $id; ?>" class="ui big positive button">
+                        <a href="../control/agregarCarrito.php?id=<?php echo $id; ?>" class="ui big positive button">
                             <i class="cart plus icon"></i>
                             Alquilar Ahora
                         </a>

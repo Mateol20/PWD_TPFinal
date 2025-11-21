@@ -18,5 +18,5 @@ if ($dias < 1) {
 
 $_SESSION['dias'][$id] = $dias;
 
-header("Location: carrito.php");
+header("Location: ../vista/carrito.php");
 exit;

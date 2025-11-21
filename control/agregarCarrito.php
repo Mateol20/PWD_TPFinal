@@ -20,5 +20,5 @@ if (!isset($_SESSION['carrito'])) {
 $_SESSION['carrito'][] = $id;
 
 // Redirigir al carrito
-header("Location: carrito.php");
+header("Location: ../vista/carrito.php");
 exit;

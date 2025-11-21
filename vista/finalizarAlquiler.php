@@ -6,17 +6,7 @@ $abmProducto = new ABMProducto;
 $compra = new ABMCompra;
 
 $ABMCompraEstado->modificar('',3);
-
 $abmProducto->actualizarStock();
-
-if (isset($_SESSION['carrito'])) {
-    unset($_SESSION['carrito']);
-}
-if (isset($_SESSION['dias'])) {
-    unset($_SESSION['dias']);
-}
-
-
 // eliminar carrito y días
 unset($_SESSION['carrito']);
 unset($_SESSION['dias']);
