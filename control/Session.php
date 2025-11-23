@@ -15,9 +15,9 @@ class Session
     {
         $_SESSION['idUsuario'] = $idUsuario;
     }
-    public function getIdUsuario($idUsuario)
+    public function getIdUsuario()
     {
-        $_SESSION['idUsuario'] = $idUsuario;
+        return $_SESSION['idUsuario'] ?? null;
     }
 
     // Guarda el rol en la sesión

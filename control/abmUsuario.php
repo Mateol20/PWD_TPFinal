@@ -350,4 +350,21 @@ class ABMUsuario
             return $resultadoAlta;
         }
     }
+    // En tu clase ABMUsuario (dentro de la carpeta modelo)
+
+    public function obtenerYAsignarRol($idUsuario, $session)
+    {
+        // 1. Busca el rol.
+        $rolesUsuario = $this->buscarRoles(['id' => $idUsuario]);
+
+        if (!empty($rolesUsuario)) {
+            $objUsuarioRol = $rolesUsuario[0];
+            $idRol = $objUsuarioRol->getIdRol();
+
+            // 2. Asigna el ID del rol a la sesión
+            $session->setRol($idRol);
+            return true;
+        }
+        return false; // No se encontró rol
+    }
 }

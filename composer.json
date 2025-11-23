@@ -1,6 +1,7 @@
 {
     "require": {
         "respect/validation": "^2.2",
-        "imagine/imagine": "~0.5.0"
+        "imagine/imagine": "~0.5.0",
+        "phpmailer/phpmailer": "^7.0"
     }
 }

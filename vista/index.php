@@ -36,7 +36,6 @@ $listaAutos = $abmProducto->buscar(null);
 <body>
 
     <?php include("estructura/header.php"); ?>
-
     <div class="ui container" style="margin-top: 40px;">
         <h1 class="ui center aligned header">Autos Disponibles para Alquilar</h1>
 

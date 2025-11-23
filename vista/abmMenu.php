@@ -2,6 +2,12 @@
 include_once "../configuracion.php";
 include_once "../Control/pagPublica.php"; //cargar primero siempre
 
+include_once __DIR__ . '/../util/VerificadorAcceso.php';
+
+
+verificarAcceso('abmMenu.php');
+
+
 
 
 $objControl = new ABMMenu();

@@ -3,7 +3,11 @@ include_once "./Estructura/header.php";
 include_once "../Control/pagPublica.php";
 
 $idUsuario = $session->getUsuario();
+include_once __DIR__ . '../util/VerificadorAcceso.php';
 
+// 2. Ejecutar la verificación, pasándole el nombre del archivo
+// El verificador sabrá que roles buscar para 'reportes_ventas.php'
+verificarAcceso('infoUsuarios.php');
 $res = false;
 if ($idUsuario) {
     $abmUsuario = new AbmUsuario();
