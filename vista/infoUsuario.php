@@ -3,10 +3,8 @@ include_once "./Estructura/header.php";
 include_once "../Control/pagPublica.php";
 
 $idUsuario = $session->getUsuario();
-include_once __DIR__ . '../util/VerificadorAcceso.php';
+include_once __DIR__ . '/../util/VerificadorAcceso.php';
 
-// 2. Ejecutar la verificación, pasándole el nombre del archivo
-// El verificador sabrá que roles buscar para 'reportes_ventas.php'
 verificarAcceso('infoUsuarios.php');
 $res = false;
 if ($idUsuario) {
@@ -22,11 +20,7 @@ if ($idUsuario) {
 <div class="ui center aligned fluid container grid">
     <div class="sixteen wide column">
         <div class="ui center aligned padded segment container grid">
-            <div class="ui four wide column">
-                <div class="image">
-                    <img class="ui massive image" src="./img/Productos/android-chrome-192x192.png" alt="Default-Profile-Picture">
-                </div>
-            </div>
+
             <div class="ui ten wide column">
                 <?php
                 if ($res) {
