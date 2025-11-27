@@ -155,4 +155,22 @@ class Session
     {
         return json_encode($_SESSION, JSON_PRETTY_PRINT);
     }
+    public function getNombreUsuario()
+    {
+        $idUsuario = $this->getUsuario();
+        if (!$idUsuario) {
+            return null;
+        }
+
+        $obj = new AbmUsuario();
+        $param = ['idusuario' => $idUsuario];
+        $resultado = $obj->buscar($param);
+
+        if (count($resultado) > 0) {
+            $usuario = $resultado[0];
+            return $usuario->getNombre();  // o el método que tengas
+        }
+
+        return null;
+    }
 }

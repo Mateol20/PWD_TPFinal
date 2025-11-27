@@ -7,20 +7,7 @@ $page_title = "Alquiler de Autos";
 $idUsuario = null;
 $idRol = null;
 $mensajeSaludo = "Iniciar Sesión";
-if ($session->validar()) {
 
-    // 3. OBTENER LAS VARIABLES Y DEFINIRLAS
-    $idUsuario = $session->getIdUsuario(); // Usando el método CORREGIDO (que devuelve el ID)
-    $idRol = $session->getRol();           // Este método hace una consulta a la BD
-
-    // 4. PREPARAR EL SALUDO
-    $nombreUsuario = "ID: " . $idUsuario;
-
-    $mensajeSaludo = "¡Hola, " . htmlspecialchars($nombreUsuario) . "!";
-
-    // Si tu menú debe mostrar el rol:
-    // $mensajeSaludo .= " (Rol ID: " . $idRol . ")"; 
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
